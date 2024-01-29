@@ -19,7 +19,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CoinManagerTests {
+class CoinManagerTests {
     private ServerMock server;
     private QuestSystem questSystem;
     private Database database;
@@ -38,32 +38,32 @@ public class CoinManagerTests {
     @AfterEach
     public void tearDown() {
         MockBukkit.unmock();
-        database.executeStatement("DELETE FROM `s249_db`.`coins` WHERE  `UUID`=?;", Arrays.asList(UUIDConverter.toByteArray(player.getUniqueId())));
+        coinManager.removePlayer(player);
     }
 
     @Test
-    public void testSetCoins() {
+    void testSetCoins() {
         assertTrue(coinManager.setCoins(player, 1));
     }
 
     @Test
-    public void testGetCoins() {
+    void testGetCoins() {
         coinManager.addPlayer(player);
         coinManager.setCoins(player, 1);
         assertEquals(1, coinManager.getCoins(player));
     }
 
     @Test
-    public void testAddPlayer() {
-        // Could check if actually in DB
+    void testAddPlayer() {
         assertTrue(coinManager.addPlayer(player));
+        assertEquals(0, coinManager.getCoins(player));
     }
 
     @Test
-    public void removePlayer() {
-        System.out.println("FU");
+    void removePlayer() {
         coinManager.addPlayer(player);
         assertTrue(coinManager.removePlayer(player));
+        assertEquals(-1, coinManager.getCoins(player)); // tests to confirm player isnt in db
     }
 
 }

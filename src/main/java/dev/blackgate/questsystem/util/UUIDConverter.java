@@ -4,6 +4,9 @@ import java.util.UUID;
 
 public class UUIDConverter {
     // More performance focused way to store UUID's (Stores it in half the size of VARCHAR)
+    private UUIDConverter() {
+        throw new IllegalStateException("Utility class");
+    }
     public static byte[] toByteArray(UUID uuid) {
         long msb = uuid.getMostSignificantBits();
         long lsb = uuid.getLeastSignificantBits();

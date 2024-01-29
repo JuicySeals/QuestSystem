@@ -1,9 +1,12 @@
 package dev.blackgate.questsystem;
 
 import dev.blackgate.questsystem.coin.CoinManager;
+import dev.blackgate.questsystem.commands.subcommands.CreateQuestSubCommand;
 import dev.blackgate.questsystem.database.Database;
-import dev.blackgate.questsystem.listeners.PlayerJoinListener;
+import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestCreationListener;
+import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,6 +21,7 @@ public class QuestSystem extends JavaPlugin {
     private ConfigHelper configHelper;
     private PluginManager pluginManager;
     private CoinManager coinManager;
+    private QuestCreationManager questCreationManager;
     private final Logger logger = Bukkit.getLogger();
     @Override
     public void onEnable() {
@@ -51,6 +55,7 @@ public class QuestSystem extends JavaPlugin {
 
     private void registerListeners() {
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        pluginManager.registerEvents(new QuestCreationListener(this), this);
     }
 
     private void registerManagers() {
@@ -58,6 +63,7 @@ public class QuestSystem extends JavaPlugin {
         getCommand(getConfigHelper().getCommand()).setExecutor(commandManager);
         coinManager = new CoinManager(this);
         pluginManager = Bukkit.getPluginManager();
+        questCreationManager = new QuestCreationManager();
     }
 
     private void registerCommands() {
@@ -69,7 +75,7 @@ public class QuestSystem extends JavaPlugin {
     }
 
     private void registerSubCommands() {
-
+        commandManager.registerSubCommand(new CreateQuestSubCommand(this));
     }
 
     public CommandManager getCommandManager() {
@@ -94,4 +100,8 @@ public class QuestSystem extends JavaPlugin {
         return database;
     }
     public CoinManager getCoinManager() {return coinManager;}
+
+    public QuestCreationManager getQuestCreationManager() {
+        return questCreationManager;
+    }
 }

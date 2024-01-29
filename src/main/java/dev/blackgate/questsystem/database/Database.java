@@ -90,7 +90,6 @@ public class Database {
         for (int i = 0; i < parameters.size(); i++) {
             preparedStatement.setObject(i + 1, parameters.get(i));
         }
-        System.out.println(preparedStatement);
         return preparedStatement;
     }
 

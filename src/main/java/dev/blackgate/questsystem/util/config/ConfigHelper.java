@@ -8,7 +8,6 @@ public class ConfigHelper {
   private final FileConfiguration fileConfig;
 
   public ConfigHelper(QuestSystem questSystem) {
-    //TODO ADD COVERAGE TO CHECK IF VALUES EXIST AND VALID
     this.fileConfig = questSystem.getConfig();
   }
 
@@ -30,6 +29,11 @@ public class ConfigHelper {
 
   public String getGeneralMessage(String message) {
     String messageKey = "messages." + message;
+    return formatColor(fileConfig.getString(messageKey, ""));
+  }
+
+  public String getQuestCreationMessage(String message) {
+    String messageKey = "quest-creation-messages." + message;
     return formatColor(fileConfig.getString(messageKey, ""));
   }
 

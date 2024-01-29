@@ -1,5 +1,6 @@
-package dev.blackgate.questsystem;
+package dev.blackgate.questsystem.quest;
 
+import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,8 +28,10 @@ public class QuestReward {
     public void executeRewards(Player player) {
         switch (rewardType) {
             case XP -> giveXP(player);
-            case ITEM -> giveItems(player);
-            case COINS -> System.out.println("TODO");//TODO
+            case ITEMS -> giveItems(player);
+            case COINS -> {
+                //TODO
+            }
             case COMMAND -> executeCommands(player);
         }
     }

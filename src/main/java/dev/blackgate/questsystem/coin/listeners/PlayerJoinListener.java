@@ -1,6 +1,5 @@
-package dev.blackgate.questsystem.listeners;
+package dev.blackgate.questsystem.coin.listeners;
 
-import dev.blackgate.questsystem.Quest;
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.database.Database;
 import org.bukkit.event.EventHandler;

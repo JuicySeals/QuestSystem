@@ -6,11 +6,9 @@ import dev.blackgate.questsystem.util.UUIDConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -31,7 +29,7 @@ public class CoinManager {
     public int getCoins(Player player) {
         String query = "SELECT amount from coins WHERE UUID = ?";
         Object[] variables = {UUIDConverter.toByteArray(player.getUniqueId())};
-        AtomicInteger resultHolder = new AtomicInteger(-2);
+        AtomicInteger resultHolder = new AtomicInteger(-1);
         database.executeQuery(query,
                 resultSet -> {
                     try {
@@ -41,7 +39,6 @@ public class CoinManager {
                     } catch (SQLException e) {
                         logger.severe("Failed to get coins for " + player.getName());
                         e.printStackTrace();
-                        resultHolder.set(-1);
                     }
                 }, List.of(variables));
         return resultHolder.get();
@@ -80,7 +77,7 @@ public class CoinManager {
 
     public boolean removePlayer(Player player) {
         try {
-            String removePlayerSQL = "DELETE FROM `s249_db`.`coins` WHERE 'UUID'=?;";
+            String removePlayerSQL = "DELETE FROM s249_db.coins WHERE UUID=?;";
             Object[] variables = {UUIDConverter.toByteArray(player.getUniqueId())};
             return database.executeStatement(removePlayerSQL, List.of(variables));
         }catch (Exception e) {

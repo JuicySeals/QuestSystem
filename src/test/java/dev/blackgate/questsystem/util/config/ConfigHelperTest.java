@@ -13,7 +13,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class ConfigHelperTest {
+class ConfigHelperTest {
     private ServerMock server;
     private QuestSystem questSystem;
 
@@ -29,7 +29,7 @@ public class ConfigHelperTest {
     }
 
     @Test
-    public void testNoPermissionMessage() {
+    void testNoPermissionMessage() {
         try {
             assertNotNull(questSystem.getConfigHelper().getNoPermission());
         }catch (Exception e) {
@@ -39,7 +39,7 @@ public class ConfigHelperTest {
     }
 
     @Test
-    public void testConsoleRanMessage() {
+    void testConsoleRanMessage() {
         try {
             assertNotNull(questSystem.getConfigHelper().getConsoleRan());
         }catch (Exception e) {
@@ -49,7 +49,7 @@ public class ConfigHelperTest {
     }
 
     @Test
-    public void testIncorrectUsageMessage() {
+    void testIncorrectUsageMessage() {
         try {
             assertNotNull(questSystem.getConfigHelper().getIncorrectUsage("TEST"));
         }catch (Exception e) {

@@ -1,8 +1,8 @@
-package dev.blackgate.questsystem;
+package dev.blackgate.questsystem.quest.enums;
 
 public enum QuestRewardType {
     COMMAND,
-    ITEM,
+    ITEMS,
     COINS,
     XP,
 }

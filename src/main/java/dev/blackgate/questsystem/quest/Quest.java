@@ -1,6 +1,4 @@
-package dev.blackgate.questsystem;
-
-import org.bukkit.inventory.ItemStack;
+package dev.blackgate.questsystem.quest;
 
 import java.util.List;
 
@@ -13,11 +11,11 @@ public class Quest {
         this.questName = questName;
         this.description = description;
         this.rewards = rewards;
-        addToDb();
+
     }
 
-    private void addToDb() {
-
+    private void addToDatabase() {
+        //TODO
     }
 
     public String getQuestName() {

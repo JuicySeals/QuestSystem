@@ -7,12 +7,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandManager implements CommandExecutor {
-  private final Map<String, SubCommand> subCommands = Collections.unmodifiableMap(new HashMap<>());
+  private final Map<String, SubCommand> subCommands = new HashMap<>();
   private final QuestSystem questSystem;
 
   public CommandManager(QuestSystem questSystem) {
