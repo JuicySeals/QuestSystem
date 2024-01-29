@@ -1,0 +1,8 @@
+name: Quests
+main: dev.blackgate.questsystem.QuestSystem
+version: 1
+author: JuicySeals
+commands:
+  quest:
+    usage: /quest <subcommand>
+    description: The base command for quests. Will show help if no subcommand specified.

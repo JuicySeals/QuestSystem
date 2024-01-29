@@ -1,0 +1,11 @@
+base-command: "quest"
+messages:
+  no-permission: "&cNo permission."
+  must-be-player: "&cOnly players can run this command"
+  incorrect-usage: "&cIncorrect usage: %usage%"
+database:
+  host: localhost
+  port: 3306
+  username: username
+  password: password
+  name: name
