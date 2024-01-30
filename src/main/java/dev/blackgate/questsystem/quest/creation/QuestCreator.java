@@ -2,6 +2,10 @@ package dev.blackgate.questsystem.quest.creation;
 
 import de.rapha149.signgui.SignGUI;
 import dev.blackgate.questsystem.QuestSystem;
+import dev.blackgate.questsystem.quest.QuestReward;
+import dev.blackgate.questsystem.quest.creation.conversations.CommandConversation;
+import dev.blackgate.questsystem.quest.creation.gui.QuestRewardTypeGui;
+import dev.blackgate.questsystem.quest.creation.gui.QuestTypeGui;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import dev.blackgate.questsystem.quest.enums.QuestType;
 import org.apache.commons.text.WordUtils;
@@ -24,6 +28,7 @@ public class QuestCreator {
     private String questName, description;
     private QuestType questType;
     private QuestRewardType questRewardType;
+    private QuestReward questReward;
     public QuestCreator(Player player, QuestSystem questSystem) {
         this.player = player;
         this.questSystem = questSystem;
@@ -33,15 +38,12 @@ public class QuestCreator {
 
     private void openQuestTypeGui() {
         String message = questSystem.getConfigHelper().getQuestCreationMessage("select-type").replace("%stage%", "type");
-        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.stripColor(message));
-        List<ItemStack> items = getQuestTypeItems();
-        for(int i = 0; i < items.size(); i++) {
-            inv.setItem(i+2, items.get(i));
-        }
+        QuestTypeGui questTypeGui = new QuestTypeGui(questSystem);
         player.sendMessage(message);
-        player.openInventory(inv);
+        questTypeGui.open(player);
     }
 
+    // Didn't think it was a good idea to seperate the sign prompts for an entire new class
     private void openNamePrompt() {
         String message = questSystem.getConfigHelper().getQuestCreationMessage("input-details").replace("%stage%", "name");
         player.sendMessage(message);
@@ -99,55 +101,31 @@ public class QuestCreator {
 
     private void openRewardTypePrompt() {
         String message = questSystem.getConfigHelper().getQuestCreationMessage("select-type").replace("%stage%", "reward type");
-        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.stripColor(message));
-        List<ItemStack> items = getQuestRewardItems();
-        for(int i = 0; i < items.size(); i++) {
-            inv.setItem(i+2, items.get(i));
-        }
-        player.openInventory(inv);
-        //TODO CREATE METHOD TO SET REWARD TYPE AND ADD TO LISTENER TO HANDLE WHICH ONE IS CLICKED
+        QuestRewardTypeGui questRewardTypeGui = new QuestRewardTypeGui(questSystem);
+        questRewardTypeGui.open(player);
         player.sendMessage(message);
 
     }
 
-    private List<ItemStack> getQuestTypeItems() {
-        List<ItemStack> items = new ArrayList<>();
-        ItemStack breakBlocks = new ItemStack(Material.NETHERITE_PICKAXE);
-        ItemStack killEntities = new ItemStack(Material.NETHERITE_SWORD);
-        ItemStack placeBlocks = new ItemStack(Material.OAK_LOG);
-        ItemStack obtainItems = new ItemStack(Material.NETHERITE_INGOT);
-        ItemStack getAchievment = new ItemStack(Material.EXPERIENCE_BOTTLE);
-        items.add(breakBlocks);
-        items.add(killEntities);
-        items.add(placeBlocks);
-        items.add(obtainItems);
-        items.add(getAchievment);
-        for(int i = 0; i < 5; i++) {
-            String name = formatEnumName(QuestType.values()[i]);
-            ItemMeta meta = items.get(i).getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN + name);
-            items.get(i).setItemMeta(meta);
-        }
-        return items;
+    public void setQuestRewardType(QuestRewardType questRewardType) {
+        this.questRewardType = questRewardType;
+        String message = questSystem.getConfigHelper().getQuestCreationMessage("set-details").replace("%stage%", "reward type").replace("%value%", formatEnumName(questType));
+        player.sendMessage(message);
+        openQuestRewardPrompt(questRewardType);
+        player.closeInventory();
     }
 
-    private List<ItemStack> getQuestRewardItems() {
-        List<ItemStack> items = new ArrayList<>();
-        ItemStack command = new ItemStack(Material.COMMAND_BLOCK);
-        ItemStack item = new ItemStack(Material.NETHERITE_INGOT);
-        ItemStack coins = new ItemStack(Material.GOLD_INGOT);
-        ItemStack xp = new ItemStack(Material.EXPERIENCE_BOTTLE);
-        items.add(command);
-        items.add(item);
-        items.add(coins);
-        items.add(xp);
-        for(int i = 0; i < 4; i++) {
-            String name = formatEnumName(QuestRewardType.values()[i]);
-            ItemMeta meta = items.get(i).getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN + name);
-            items.get(i).setItemMeta(meta);
+    private void openQuestRewardPrompt(QuestRewardType questRewardType) {
+        switch (questRewardType) {
+            case COMMAND -> {
+                CommandConversation conversation = new CommandConversation(questSystem, player);
+                conversation.start();
+                questReward = new QuestReward(QuestRewardType.COMMAND, conversation.getCommands());
+            }
+            case XP -> {
+
+            }
         }
-        return items;
     }
 
     private String formatEnumName(Enum<?> type) {

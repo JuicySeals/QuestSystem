@@ -10,7 +10,8 @@ database:
   password: password
   name: name
 quest-creation-messages:
-  quit-quest-creation: "&cStopped creating quest"
+  quit-quest-creation: "&cFailed to create quest"
   input-details: "&aInput quest %stage%" # %stage% can be equal to name or description
   select-type: "&aSelect quest %stage%" # %stage% can be equal to type or reward type
   set-details: "&aSet quest %stage% to %value%" # Stage can be name, description, quest type, quest reward type
+  finished-creating-quest: "&aFinished creating quest!"
