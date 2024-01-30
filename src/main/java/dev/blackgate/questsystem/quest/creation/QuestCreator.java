@@ -6,6 +6,9 @@ import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.creation.conversations.CommandConversation;
 import dev.blackgate.questsystem.quest.creation.gui.QuestRewardTypeGui;
 import dev.blackgate.questsystem.quest.creation.gui.QuestTypeGui;
+import dev.blackgate.questsystem.quest.creation.gui.QuestXpGui;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestRewardTypeListener;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestXpGuiListener;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import dev.blackgate.questsystem.quest.enums.QuestType;
 import org.apache.commons.text.WordUtils;
@@ -109,10 +112,9 @@ public class QuestCreator {
 
     public void setQuestRewardType(QuestRewardType questRewardType) {
         this.questRewardType = questRewardType;
-        String message = questSystem.getConfigHelper().getQuestCreationMessage("set-details").replace("%stage%", "reward type").replace("%value%", formatEnumName(questType));
+        String message = questSystem.getConfigHelper().getQuestCreationMessage("set-details").replace("%stage%", "reward type").replace("%value%", formatEnumName(questRewardType));
         player.sendMessage(message);
         openQuestRewardPrompt(questRewardType);
-        player.closeInventory();
     }
 
     private void openQuestRewardPrompt(QuestRewardType questRewardType) {
@@ -121,11 +123,23 @@ public class QuestCreator {
                 CommandConversation conversation = new CommandConversation(questSystem, player);
                 conversation.start();
                 questReward = new QuestReward(QuestRewardType.COMMAND, conversation.getCommands());
+                create();
             }
             case XP -> {
-
+                QuestXpGui questXpGui = new QuestXpGui(questSystem);
+                questXpGui.open(player);
+                player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("set-xp"));
             }
         }
+    }
+
+    public void setXpAmount(int amount) {
+        questReward = new QuestReward(QuestRewardType.XP, amount);
+        create();
+    }
+
+    private void create() {
+        player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("finished-creating-quest"));
     }
 
     private String formatEnumName(Enum<?> type) {

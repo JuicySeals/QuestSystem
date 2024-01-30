@@ -54,8 +54,6 @@ public class CommandConversation {
             public void conversationAbandoned(@NotNull ConversationAbandonedEvent conversationAbandonedEvent) {
                 if(getCommands().isEmpty()) {
                     player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
-                }else {
-                    player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("finished-creating-quest"));
                 }
             }
         });

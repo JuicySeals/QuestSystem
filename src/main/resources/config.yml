@@ -15,3 +15,4 @@ quest-creation-messages:
   select-type: "&aSelect quest %stage%" # %stage% can be equal to type or reward type
   set-details: "&aSet quest %stage% to %value%" # Stage can be name, description, quest type, quest reward type
   finished-creating-quest: "&aFinished creating quest!"
+  set-xp: "&aSelect the amount of levels"

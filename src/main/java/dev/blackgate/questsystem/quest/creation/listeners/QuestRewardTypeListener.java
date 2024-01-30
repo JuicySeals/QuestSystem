@@ -4,6 +4,7 @@ import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import dev.blackgate.questsystem.quest.enums.QuestType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,6 +36,7 @@ public class QuestRewardTypeListener implements Listener {
         if (questCreator == null) {
             return;
         }
+
         if (event.getView().getTitle().contains("reward")) {
            questCreator.setQuestRewardType(getQuestRewardTypeFromItem(event.getCurrentItem()));
         }

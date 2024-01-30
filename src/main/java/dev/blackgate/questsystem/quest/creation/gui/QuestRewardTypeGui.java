@@ -56,10 +56,10 @@ public class QuestRewardTypeGui implements InventoryGUI {
 
     private void create() {
         String message = configHelper.getQuestCreationMessage("select-type").replace("%stage%", "reward type");
-        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.stripColor(message));
+        inventory = Bukkit.createInventory(null, 9, ChatColor.stripColor(message));
         List<ItemStack> items = getItems();
         for(int i = 0; i < items.size(); i++) {
-            inv.setItem(i+2, items.get(i));
+            inventory.setItem(i+2, items.get(i));
         }
     }
 }

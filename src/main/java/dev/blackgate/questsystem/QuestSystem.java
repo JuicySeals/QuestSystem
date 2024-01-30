@@ -5,8 +5,10 @@ import dev.blackgate.questsystem.commands.subcommands.CreateQuestSubCommand;
 import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestRewardTypeListener;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestTypeListener;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestXpGuiListener;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -56,6 +58,8 @@ public class QuestSystem extends JavaPlugin {
     private void registerListeners() {
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
         pluginManager.registerEvents(new QuestTypeListener(this), this);
+        pluginManager.registerEvents(new QuestRewardTypeListener(this), this);
+        pluginManager.registerEvents(new QuestXpGuiListener(this), this);
     }
 
     private void registerManagers() {
