@@ -28,7 +28,7 @@ public class CommandManager implements CommandExecutor {
 
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-      SubCommand help = this.subCommands.get("Help");
+      SubCommand help = this.subCommands.get("help");
       if (!hasPermission(sender, help.getPermission())) {
         sender.sendMessage(questSystem.getConfigHelper().getNoPermission());
         return true;
@@ -40,6 +40,7 @@ public class CommandManager implements CommandExecutor {
     SubCommand subCommand = this.subCommands.get(args[0]);
     if (subCommand == null) {
       sender.sendMessage(questSystem.getConfigHelper().getGeneralMessage("unknown-sub-command"));
+      subCommands.get("help").run(sender, command, label, args);
       return true;
     }
 

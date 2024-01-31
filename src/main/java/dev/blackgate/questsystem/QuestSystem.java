@@ -2,9 +2,11 @@ package dev.blackgate.questsystem;
 
 import dev.blackgate.questsystem.coin.CoinManager;
 import dev.blackgate.questsystem.commands.subcommands.CreateQuestSubCommand;
+import dev.blackgate.questsystem.commands.subcommands.HelpSubCommand;
 import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestCoinGuiListener;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestRewardTypeListener;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestTypeListener;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
@@ -13,6 +15,7 @@ import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -27,6 +30,7 @@ public class QuestSystem extends JavaPlugin {
     private final Logger logger = Bukkit.getLogger();
     @Override
     public void onEnable() {
+        //TODO Remove the stupid %stage% values and make each one a new entry in config
         // Order is very important
         saveDefaultConfig();
         logger.info("Registering utility");
@@ -60,11 +64,12 @@ public class QuestSystem extends JavaPlugin {
         pluginManager.registerEvents(new QuestTypeListener(this), this);
         pluginManager.registerEvents(new QuestRewardTypeListener(this), this);
         pluginManager.registerEvents(new QuestXpGuiListener(this), this);
+        pluginManager.registerEvents(new QuestCoinGuiListener(this), this);
     }
 
     private void registerManagers() {
         commandManager = new CommandManager(this);
-        getCommand(getConfigHelper().getCommand()).setExecutor(commandManager);
+        getCommand("quests").setExecutor(commandManager);
         coinManager = new CoinManager(this);
         pluginManager = Bukkit.getPluginManager();
         questCreationManager = new QuestCreationManager();
@@ -80,6 +85,7 @@ public class QuestSystem extends JavaPlugin {
 
     private void registerSubCommands() {
         commandManager.registerSubCommand(new CreateQuestSubCommand(this));
+        commandManager.registerSubCommand(new HelpSubCommand(this));
     }
 
     public CommandManager getCommandManager() {

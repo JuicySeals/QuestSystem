@@ -24,7 +24,7 @@ public class ConfigHelper {
   }
 
   public String getCommand() {
-    return fileConfig.getString("base-command");
+    return "quests";
   }
 
   public String getGeneralMessage(String message) {

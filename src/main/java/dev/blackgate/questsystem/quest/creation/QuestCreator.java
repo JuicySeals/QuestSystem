@@ -4,6 +4,7 @@ import de.rapha149.signgui.SignGUI;
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.creation.conversations.CommandConversation;
+import dev.blackgate.questsystem.quest.creation.gui.QuestCoinGui;
 import dev.blackgate.questsystem.quest.creation.gui.QuestRewardTypeGui;
 import dev.blackgate.questsystem.quest.creation.gui.QuestTypeGui;
 import dev.blackgate.questsystem.quest.creation.gui.QuestXpGui;
@@ -130,7 +131,17 @@ public class QuestCreator {
                 questXpGui.open(player);
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("set-xp"));
             }
+            case COINS -> {
+                QuestCoinGui questCoinGui = new QuestCoinGui(questSystem);
+                questCoinGui.open(player);
+                player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("set-coins"));
+            }
         }
+    }
+
+    public void setCoinAmount(int amount) {
+        questReward = new QuestReward(QuestRewardType.COINS, amount);
+        create();
     }
 
     public void setXpAmount(int amount) {

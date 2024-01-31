@@ -1,8 +1,8 @@
-base-command: "quest"
 messages:
   no-permission: "&cNo permission."
   must-be-player: "&cOnly players can run this command"
   incorrect-usage: "&cIncorrect usage: %usage%"
+  unknown-sub-command: "&cUnknown sub-command"
 database:
   host: localhost
   port: 3306
@@ -13,6 +13,7 @@ quest-creation-messages:
   quit-quest-creation: "&cFailed to create quest"
   input-details: "&aInput quest %stage%" # %stage% can be equal to name or description
   select-type: "&aSelect quest %stage%" # %stage% can be equal to type or reward type
-  set-details: "&aSet quest %stage% to %value%" # Stage can be name, description, quest type, quest reward type
+  set-details: "&aSet quest %stage% to %value%" # %stage% can be name, description, quest type, quest reward type
   finished-creating-quest: "&aFinished creating quest!"
   set-xp: "&aSelect the amount of levels"
+  set-coins: "&aSelect the amount of coins"

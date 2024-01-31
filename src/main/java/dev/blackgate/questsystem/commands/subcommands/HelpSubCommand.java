@@ -2,35 +2,35 @@ package dev.blackgate.questsystem.commands.subcommands;
 
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.commands.interfaces.SubCommand;
-import dev.blackgate.questsystem.quest.creation.QuestCreator;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public class CreateQuestSubCommand implements SubCommand {
-    private final QuestSystem questSystem;
-    public CreateQuestSubCommand(QuestSystem questSystem) {
+public class HelpSubCommand implements SubCommand {
+    QuestSystem questSystem;
+    public HelpSubCommand(QuestSystem questSystem) {
         this.questSystem = questSystem;
     }
     @Override
     public String getName() {
-        return "create";
+        return "help";
     }
 
     @Override
     public String getPermission() {
-        return "Quest.CreateQuest";
+        return "Quest.Help";
     }
 
     @Override
     public void run(CommandSender paramCommandSender, Command paramCommand, String paramString, String[] paramArrayOfString) {
-        Player player = (Player) paramCommandSender;
-        new QuestCreator(player, questSystem);
+        paramCommandSender.sendMessage(ChatColor.GRAY + "---------------|" + ChatColor.GOLD + " Commands " + ChatColor.GRAY + "|---------------");
+        for (SubCommand scmd : this.questSystem.getCommandManager().getSubCommands().values())
+            paramCommandSender.sendMessage(ChatColor.YELLOW + scmd.getUsage() + ChatColor.GOLD + " | " + ChatColor.GRAY + scmd.getDesc());
     }
 
     @Override
     public boolean canConsoleRun() {
-        return false;
+        return true;
     }
 
     @Override
@@ -40,6 +40,6 @@ public class CreateQuestSubCommand implements SubCommand {
 
     @Override
     public String getDesc() {
-        return "Creates a quest";
+        return "Shows all commands";
     }
 }

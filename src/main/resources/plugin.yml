@@ -4,6 +4,6 @@ version: 1
 author: JuicySeals
 api-version: 1.20
 commands:
-  quest:
-    usage: /quest <subcommand>
+  quests:
+    usage: /quests <subcommand>
     description: The base command for quests. Will show help if no subcommand specified.
