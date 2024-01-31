@@ -48,6 +48,7 @@ public class QuestRewardTypeListener implements Listener {
                 return QuestRewardType.COMMAND;
             }
             case NETHERITE_INGOT -> {
+                System.out.println("AHAHA");
                 return QuestRewardType.ITEMS;
             }
             case GOLD_INGOT -> {

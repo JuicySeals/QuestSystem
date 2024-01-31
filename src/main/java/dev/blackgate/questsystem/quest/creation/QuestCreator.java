@@ -4,10 +4,7 @@ import de.rapha149.signgui.SignGUI;
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.creation.conversations.CommandConversation;
-import dev.blackgate.questsystem.quest.creation.gui.QuestCoinGui;
-import dev.blackgate.questsystem.quest.creation.gui.QuestRewardTypeGui;
-import dev.blackgate.questsystem.quest.creation.gui.QuestTypeGui;
-import dev.blackgate.questsystem.quest.creation.gui.QuestXpGui;
+import dev.blackgate.questsystem.quest.creation.gui.*;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestRewardTypeListener;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestXpGuiListener;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
@@ -136,11 +133,22 @@ public class QuestCreator {
                 questCoinGui.open(player);
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("set-coins"));
             }
+            case ITEMS -> {
+                QuestItemsGui questItemsGui = new QuestItemsGui(questSystem);
+                questItemsGui.open(player);
+                player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("place-items"));
+            }
         }
     }
 
     public void setCoinAmount(int amount) {
         questReward = new QuestReward(QuestRewardType.COINS, amount);
+        create();
+    }
+
+    public void setItems(List<ItemStack> items) {
+        questReward = new QuestReward(QuestRewardType.ITEMS, items);
+        player.closeInventory();
         create();
     }
 

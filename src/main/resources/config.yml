@@ -17,3 +17,4 @@ quest-creation-messages:
   finished-creating-quest: "&aFinished creating quest!"
   set-xp: "&aSelect the amount of levels"
   set-coins: "&aSelect the amount of coins"
+  place-items: "&aPlace items in inventory"
