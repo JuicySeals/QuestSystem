@@ -3,21 +3,14 @@ package dev.blackgate.questsystem.coin;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.coin.CoinManager;
 import dev.blackgate.questsystem.database.Database;
-import dev.blackgate.questsystem.util.UUIDConverter;
 import org.bukkit.entity.Player;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CoinManagerTests {
     private ServerMock server;
@@ -30,7 +23,7 @@ class CoinManagerTests {
     public void setUp() {
         server = MockBukkit.mock();
         questSystem = MockBukkit.load(QuestSystem.class);
-        database = new Database("168.100.163.69", 3306, "u249_l74SP9M2pT", "tg2MO67MLcs5QsYxN!wOH+=Y", "s249_db");
+        database = new Database("168.100.163.69", 3306, "u249_l74SP9M2pT", "xwWwOiaGjmF@=53A^r3n72mn", "s249_db");
         coinManager = new CoinManager(database);
         player = server.addPlayer("TEST-PLAYER");
     }

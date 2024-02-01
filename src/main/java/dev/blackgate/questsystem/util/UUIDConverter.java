@@ -7,6 +7,7 @@ public class UUIDConverter {
     private UUIDConverter() {
         throw new IllegalStateException("Utility class");
     }
+
     public static byte[] toByteArray(UUID uuid) {
         long msb = uuid.getMostSignificantBits();
         long lsb = uuid.getLeastSignificantBits();

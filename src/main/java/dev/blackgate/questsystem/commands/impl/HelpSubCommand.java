@@ -1,16 +1,18 @@
-package dev.blackgate.questsystem.commands.subcommands;
+package dev.blackgate.questsystem.commands.impl;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.commands.interfaces.SubCommand;
+import dev.blackgate.questsystem.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 public class HelpSubCommand implements SubCommand {
     QuestSystem questSystem;
+
     public HelpSubCommand(QuestSystem questSystem) {
         this.questSystem = questSystem;
     }
+
     @Override
     public String getName() {
         return "help";

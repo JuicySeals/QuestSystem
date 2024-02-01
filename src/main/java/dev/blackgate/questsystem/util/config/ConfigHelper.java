@@ -5,39 +5,39 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigHelper {
-  private final FileConfiguration fileConfig;
+    private final FileConfiguration fileConfig;
 
-  public ConfigHelper(QuestSystem questSystem) {
-    this.fileConfig = questSystem.getConfig();
-  }
+    public ConfigHelper(QuestSystem questSystem) {
+        this.fileConfig = questSystem.getConfig();
+    }
 
-  public String getNoPermission() {
-    return getGeneralMessage("no-permission");
-  }
+    public String getNoPermission() {
+        return getGeneralMessage("no-permission");
+    }
 
-  public String getConsoleRan() {
-    return getGeneralMessage("must-be-player");
-  }
+    public String getConsoleRan() {
+        return getGeneralMessage("must-be-player");
+    }
 
-  public String getIncorrectUsage(String usage) {
-    return getGeneralMessage("incorrect-usage").replace("%usage%", usage);
-  }
+    public String getIncorrectUsage(String usage) {
+        return getGeneralMessage("incorrect-usage").replace("%usage%", usage);
+    }
 
-  public String getCommand() {
-    return "quests";
-  }
+    public String getCommand() {
+        return "quests";
+    }
 
-  public String getGeneralMessage(String message) {
-    String messageKey = "messages." + message;
-    return formatColor(fileConfig.getString(messageKey, ""));
-  }
+    public String getGeneralMessage(String message) {
+        String messageKey = "messages." + message;
+        return formatColor(fileConfig.getString(messageKey, ""));
+    }
 
-  public String getQuestCreationMessage(String message) {
-    String messageKey = "quest-creation-messages." + message;
-    return formatColor(fileConfig.getString(messageKey, ""));
-  }
+    public String getQuestCreationMessage(String message) {
+        String messageKey = "quest-creation-messages." + message;
+        return formatColor(fileConfig.getString(messageKey, ""));
+    }
 
-  public String formatColor(String s) {
-    return ChatColor.translateAlternateColorCodes('&', s);
-  }
+    public String formatColor(String s) {
+        return ChatColor.translateAlternateColorCodes('&', s);
+    }
 }

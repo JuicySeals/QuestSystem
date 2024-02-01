@@ -1,7 +1,6 @@
 package dev.blackgate.questsystem.quest.creation.conversations;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.util.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ public class CommandConversation {
     private final Prompt continueCommandsPrompt;
     private final QuestSystem questSystem;
     private final Player player;
+
     public CommandConversation(QuestSystem questSystem, Player player) {
         this.questSystem = questSystem;
         this.commands = new ArrayList<>();
@@ -63,10 +63,10 @@ public class CommandConversation {
 
     public void start() {
         ConversationFactory factory = new ConversationFactory(questSystem)
-            .withEscapeSequence("quit")
-            .withFirstPrompt(askForCommandPrompt)
-            .withLocalEcho(false)
-            .withModality(false);
+                .withEscapeSequence("quit")
+                .withFirstPrompt(askForCommandPrompt)
+                .withLocalEcho(false)
+                .withModality(false);
         Conversation conversation = factory.buildConversation(player);
         conversation.addConversationAbandonedListener(conversationAbandonedEvent -> {
             String message = questSystem.getConfigHelper().getQuestCreationMessage("added-commands");

@@ -8,9 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class QuestReward {
-    private QuestRewardType rewardType;
+    private final QuestRewardType rewardType;
     private List<?> rewards;
     private int xpAmount;
+
     public QuestReward(QuestRewardType type, List<?> rewards) {
         this.rewardType = type;
         this.rewards = rewards;
@@ -49,8 +50,9 @@ public class QuestReward {
     }
 
     private void executeCommands(Player player) {
-        for(Object command : rewards) {
-            if(!(command instanceof String)) throw new IllegalArgumentException("Reward type set to command but reward isn't a String.");
+        for (Object command : rewards) {
+            if (!(command instanceof String))
+                throw new IllegalArgumentException("Reward type set to command but reward isn't a String.");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ((String) command).replace("%player%", player.getName()));
         }
     }

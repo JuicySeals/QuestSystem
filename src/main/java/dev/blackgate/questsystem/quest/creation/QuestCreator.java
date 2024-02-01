@@ -23,10 +23,11 @@ import java.util.List;
 public class QuestCreator {
     private final Player player;
     private final QuestSystem questSystem;
+    private final List<QuestReward> questRewards;
     private String questName;
     private String description;
     private QuestType questType;
-    private final List<QuestReward> questRewards;
+
     public QuestCreator(Player player, QuestSystem questSystem) {
         this.player = player;
         this.questSystem = questSystem;

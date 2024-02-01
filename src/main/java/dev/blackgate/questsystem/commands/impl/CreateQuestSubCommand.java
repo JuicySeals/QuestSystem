@@ -1,7 +1,7 @@
-package dev.blackgate.questsystem.commands.subcommands;
+package dev.blackgate.questsystem.commands.impl;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.commands.interfaces.SubCommand;
+import dev.blackgate.questsystem.commands.SubCommand;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -9,9 +9,11 @@ import org.bukkit.entity.Player;
 
 public class CreateQuestSubCommand implements SubCommand {
     private final QuestSystem questSystem;
+
     public CreateQuestSubCommand(QuestSystem questSystem) {
         this.questSystem = questSystem;
     }
+
     @Override
     public String getName() {
         return "create";

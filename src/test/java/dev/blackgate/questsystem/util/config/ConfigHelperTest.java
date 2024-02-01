@@ -7,9 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -32,7 +29,7 @@ class ConfigHelperTest {
     void testNoPermissionMessage() {
         try {
             assertNotNull(questSystem.getConfigHelper().getNoPermission());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
@@ -42,7 +39,7 @@ class ConfigHelperTest {
     void testConsoleRanMessage() {
         try {
             assertNotNull(questSystem.getConfigHelper().getConsoleRan());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
@@ -52,7 +49,7 @@ class ConfigHelperTest {
     void testIncorrectUsageMessage() {
         try {
             assertNotNull(questSystem.getConfigHelper().getIncorrectUsage("TEST"));
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }

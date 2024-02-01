@@ -59,14 +59,14 @@ public class Database {
     }
 
     private void createQuestsTable() {
-            String createTableSQL = """
-                CREATE TABLE IF NOT EXISTS `quests` (
-                `name` VARCHAR(50) NOT NULL,
-                `description` VARCHAR(20) NOT NULL,
-                `rewardtype` TINYINT NOT NULL,
-                `rewards` VARCHAR(20) NOT NULL
-                );
-            """;
+        String createTableSQL = """
+                    CREATE TABLE IF NOT EXISTS `quests` (
+                    `name` VARCHAR(50) NOT NULL,
+                    `description` VARCHAR(20) NOT NULL,
+                    `rewardtype` TINYINT NOT NULL,
+                    `rewards` VARCHAR(20) NOT NULL
+                    );
+                """;
 
         executeStatement(createTableSQL);
     }

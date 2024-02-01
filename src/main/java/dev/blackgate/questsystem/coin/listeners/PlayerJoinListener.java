@@ -9,17 +9,20 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoinListener implements Listener {
     QuestSystem questSystem;
+
     public PlayerJoinListener(QuestSystem questSystem) {
         this.questSystem = questSystem;
     }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if("TEST-PLAYER".equals(event.getPlayer().getName())) return; // For unit tests (No possible side effects as real players can't have - in there name.)
+        if ("TEST-PLAYER".equals(event.getPlayer().getName()))
+            return; // For unit tests (No possible side effects as real players can't have - in there name.)
         Database database = questSystem.getDatabase();
-        if(database == null) {
+        if (database == null) {
             Logger.severe("Failed to add player to database");
             return;
         }
-        if(!database.isPlayerInDatabase(event.getPlayer())) questSystem.getCoinManager().addPlayer(event.getPlayer());
+        if (!database.isPlayerInDatabase(event.getPlayer())) questSystem.getCoinManager().addPlayer(event.getPlayer());
     }
 }
