@@ -30,7 +30,7 @@ class CoinManagerTests {
     public void setUp() {
         server = MockBukkit.mock();
         questSystem = MockBukkit.load(QuestSystem.class);
-        database = new Database("168.100.163.69", 3306, "u249_l74SP9M2pT", "tg2MO67MLcs5QsYxN!wOH+=Y", "s249_db");
+        database = new Database();
         coinManager = new CoinManager(database);
         player = server.addPlayer("TEST-PLAYER");
     }
