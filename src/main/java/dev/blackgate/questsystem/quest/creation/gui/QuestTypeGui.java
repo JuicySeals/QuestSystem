@@ -34,7 +34,7 @@ public class QuestTypeGui implements InventoryGUI {
     }
 
     private void create() {
-        inventory = Bukkit.createInventory(null, 9, ChatColor.stripColor(configHelper.getQuestCreationMessage("select-type").replace("%stage%", "type")));
+        inventory = Bukkit.createInventory(null, 9, ChatColor.stripColor(configHelper.getQuestCreationMessage("select-type")));
         List<ItemStack> items = getItems();
         for(int i = 0; i < items.size(); i++) {
             inventory.setItem(i+2, items.get(i));

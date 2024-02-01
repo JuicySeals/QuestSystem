@@ -1,17 +1,21 @@
 package dev.blackgate.questsystem.quest;
 
+import dev.blackgate.questsystem.quest.enums.QuestType;
+
 import java.util.List;
 
 public class Quest {
     private String questName;
     private String description;
     private List<QuestReward> rewards;
+    private QuestType questType;
 
-    public Quest(String questName, String description, List<QuestReward> rewards) {
+    public Quest(String questName, String description, QuestType questType, List<QuestReward> rewards) {
         this.questName = questName;
         this.description = description;
         this.rewards = rewards;
-
+        this.questType = questType;
+        addToDatabase();
     }
 
     private void addToDatabase() {

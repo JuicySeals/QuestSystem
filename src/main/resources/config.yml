@@ -11,10 +11,15 @@ database:
   name: name
 quest-creation-messages:
   quit-quest-creation: "&cFailed to create quest"
-  input-details: "&aInput quest %stage%" # %stage% can be equal to name or description
-  select-type: "&aSelect quest %stage%" # %stage% can be equal to type or reward type
-  set-details: "&aSet quest %stage% to %value%" # %stage% can be name, description, quest type, quest reward type
+  input-name: "&aInput quest name"
+  input-description: "&aInput quest description"
   finished-creating-quest: "&aFinished creating quest!"
+  select-type: "&aSelect objective"
   set-xp: "&aSelect the amount of levels"
   set-coins: "&aSelect the amount of coins"
+  set-name: "&aSet name to %value%"
+  set-description: "&aSet description to %value%"
+  set-type: "&aSet type to %value%"
   place-items: "&aPlace items in inventory"
+  added-commands: "&aAdded %value% commands"
+  added-items: "&aAdded %value% items"
