@@ -48,6 +48,7 @@ public class QuestTypeGui implements InventoryGUI {
         for (int i = 0; i < items.size(); i++) {
             inventory.setItem(i + 2, items.get(i));
         }
+        questSystem.getInventoryManager().registerHandledInventory(inventory, this);
     }
 
     public List<ItemStack> getItems() {

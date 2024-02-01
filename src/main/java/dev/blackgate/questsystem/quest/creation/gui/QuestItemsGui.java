@@ -67,8 +67,8 @@ public class QuestItemsGui implements InventoryGUI {
             List<ItemStack> items = Arrays.asList(event.getInventory().getContents());
             items = filterItems(items);
             finish((Player) event.getWhoClicked(), items);
+            event.setCancelled(true);
         }
-        event.setCancelled(true);
     }
 
     @Override
@@ -83,6 +83,7 @@ public class QuestItemsGui implements InventoryGUI {
     private void create() {
         inventory = Bukkit.createInventory(null, 54, ChatColor.stripColor(configHelper.getQuestCreationMessage("place-items")));
         inventory.setItem(53, getItems().get(0));
+        questSystem.getInventoryManager().registerHandledInventory(inventory, this);
     }
 
     private void finish(Player player, List<ItemStack> items) {

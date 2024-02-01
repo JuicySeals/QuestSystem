@@ -42,6 +42,7 @@ public class QuestCoinGui implements InventoryGUI {
             }
             inventory.setItem(i + 2, items.get(i));
         }
+        questSystem.getInventoryManager().registerHandledInventory(inventory, this);
     }
 
     @Override
