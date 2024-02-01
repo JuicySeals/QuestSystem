@@ -2,28 +2,24 @@ package dev.blackgate.questsystem.coin;
 
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.database.Database;
+import dev.blackgate.questsystem.util.Logger;
 import dev.blackgate.questsystem.util.UUIDConverter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 public class CoinManager {
     Database database;
-    Logger logger;
     public CoinManager(QuestSystem questSystem) {
         this.database = questSystem.getDatabase();
-        logger = Bukkit.getLogger();
     }
 
     // For unit tests. I know its not the best practice to modify production code for unit tests but this allows easier testing and won't change anything.
     public CoinManager(Database database) {
         this.database = database;
-        logger = Bukkit.getLogger();
     }
 
     public int getCoins(Player player) {
@@ -37,7 +33,7 @@ public class CoinManager {
                             resultHolder.set(resultSet.getInt("amount"));
                         }
                     } catch (SQLException e) {
-                        logger.severe("Failed to get coins for " + player.getName());
+                        Logger.severe("Failed to get coins for " + player.getName());
                         e.printStackTrace();
                     }
                 }, List.of(variables));
@@ -53,7 +49,7 @@ public class CoinManager {
             Object[] variables = {1, UUIDConverter.toByteArray(player.getUniqueId())};
             return database.executeStatement(statement, Arrays.asList(variables));
         }catch (Exception e) {
-            logger.severe("Failed to set " + amount + " for " + player.getName());
+            Logger.severe("Failed to set " + amount + " for " + player.getName());
             e.printStackTrace();
             return false;
         }
@@ -69,7 +65,7 @@ public class CoinManager {
             Object[] variables = {UUIDConverter.toByteArray(player.getUniqueId()), 0};
             return database.executeStatement(insertPlayerSQL, List.of(variables));
         }catch (Exception e) {
-            logger.severe("Failed to add " + player.getName() + " to coins database");
+            Logger.severe("Failed to add " + player.getName() + " to coins database");
             e.printStackTrace();
             return false;
         }
@@ -81,7 +77,7 @@ public class CoinManager {
             Object[] variables = {UUIDConverter.toByteArray(player.getUniqueId())};
             return database.executeStatement(removePlayerSQL, List.of(variables));
         }catch (Exception e) {
-            logger.severe("Failed to remove " + player.getName() + " from coins database");
+            Logger.severe("Failed to remove " + player.getName() + " from coins database");
             e.printStackTrace();
             return false;
         }

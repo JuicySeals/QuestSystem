@@ -16,7 +16,7 @@ import java.util.List;
 
 public class QuestXpGui implements InventoryGUI {
     private Inventory inventory;
-    private ConfigHelper configHelper;
+    private final ConfigHelper configHelper;
     public QuestXpGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
         create();
@@ -41,7 +41,7 @@ public class QuestXpGui implements InventoryGUI {
 
     @Override
     public void open(Player player) {
-        player.openInventory(getInventory());
+        player.openInventory(inventory);
     }
 
     @Override

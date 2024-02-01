@@ -6,18 +6,18 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class QuestCreationManager {
-    private HashMap<UUID, QuestCreator> activeSessions = new HashMap<>();
+    private final HashMap<UUID, QuestCreator> activeSessions = new HashMap<>();
 
     public void addPlayer(Player player, QuestCreator questCreator) {
         activeSessions.put(player.getUniqueId(), questCreator);
     }
 
-    public void removePlayer(Player player) {
-        activeSessions.remove(player.getUniqueId());
-    }
-
     public QuestCreator getQuestCreator(Player player) {
         return activeSessions.get(player.getUniqueId());
+    }
+
+    public void removeQuestCreator(Player player) {
+        activeSessions.remove(player.getUniqueId());
     }
 
 }

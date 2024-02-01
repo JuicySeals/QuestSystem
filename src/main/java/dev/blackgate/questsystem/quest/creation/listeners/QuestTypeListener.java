@@ -8,54 +8,58 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class QuestTypeListener implements Listener {
     private final QuestSystem questSystem;
+    private final String typeTitle;
+    private boolean isSet;
 
     public QuestTypeListener(QuestSystem questSystem) {
         this.questSystem = questSystem;
+        this.typeTitle = ChatColor.stripColor(questSystem.getConfigHelper().getQuestCreationMessage("select-type").replace(" %stage%", ""));
+        this.isSet = false;
     }
 
     @EventHandler
     public void onInventoryInteract(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player) || event.getCurrentItem() == null) {
+        if (!(event.getWhoClicked() instanceof Player player) || event.getCurrentItem() == null) {
             return;
         }
 
-        String title = ChatColor.stripColor(questSystem.getConfigHelper().getQuestCreationMessage("select-type").replace(" %stage%", ""));
-        if (!event.getView().getTitle().startsWith(title)) {
+        if (!event.getView().getTitle().startsWith(typeTitle)) {
             return;
         }
 
-        Player player = (Player) event.getWhoClicked();
         QuestCreator questCreator = questSystem.getQuestCreationManager().getQuestCreator(player);
 
         if (questCreator == null) {
             return;
         }
-
-        if (!event.getView().getTitle().contains("reward")) {
-            questCreator.setQuestType(getQuestTypeFromItem(event.getCurrentItem()));
-        }
-
+        isSet = true;
+        questCreator.setQuestType(getQuestTypeFromItem(event.getCurrentItem()));
         event.setCancelled(true);
     }
     private QuestType getQuestTypeFromItem(ItemStack item) {
-        switch (item.getType()) {
-            case NETHERITE_PICKAXE:
-                return QuestType.BREAK_BLOCKS;
-            case NETHERITE_SWORD:
-                return QuestType.KILL_ENTITIES;
-            case OAK_LOG:
-                return QuestType.PLACE_BLOCKS;
-            case NETHERITE_INGOT:
-                return QuestType.OBTAIN_ITEM;
-            case EXPERIENCE_BOTTLE:
-                return QuestType.GET_ACHIEVEMENT;
-            default:
-                return null;
+        return switch (item.getType()) {
+            case NETHERITE_PICKAXE -> QuestType.BREAK_BLOCKS;
+            case NETHERITE_SWORD -> QuestType.KILL_ENTITIES;
+            case OAK_LOG -> QuestType.PLACE_BLOCKS;
+            case NETHERITE_INGOT -> QuestType.OBTAIN_ITEM;
+            case EXPERIENCE_BOTTLE -> QuestType.GET_ACHIEVEMENT;
+            default -> null;
+        };
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if(!(event.getPlayer() instanceof Player player)) return;
+        String title = event.getView().getTitle();
+        if(!title.startsWith(typeTitle)) return;
+        if(!isSet) {
+            questSystem.getQuestCreationManager().removeQuestCreator(player);
+            player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
         }
     }
 }

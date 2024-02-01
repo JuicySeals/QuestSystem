@@ -1,6 +1,8 @@
 package dev.blackgate.questsystem.quest.creation.listeners;
 
 import dev.blackgate.questsystem.QuestSystem;
+import dev.blackgate.questsystem.quest.creation.QuestCreator;
+import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,9 +14,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class QuestCoinGuiListener implements Listener {
-    private QuestSystem questSystem;
+    private final QuestSystem questSystem;
+    private final String coinTitle;
+    private boolean isSet;
     public QuestCoinGuiListener(QuestSystem questSystem) {
         this.questSystem = questSystem;
+        this.coinTitle = ChatColor.stripColor(questSystem.getConfigHelper().getQuestCreationMessage("set-coins"));
+        this.isSet = false;
     }
     @EventHandler
     public void onInventoryInteract(InventoryClickEvent event) {
@@ -24,8 +30,7 @@ public class QuestCoinGuiListener implements Listener {
         if(!event.getCurrentItem().getItemMeta().hasDisplayName()) return;
 
         String title = event.getView().getTitle();
-        String expectedTitle = ChatColor.stripColor(questSystem.getConfigHelper().getQuestCreationMessage("set-coins"));
-        if(title.equals(expectedTitle) || title.endsWith(" coins")) {
+        if(title.equals(coinTitle) || title.endsWith(" coins")) {
             event.setCancelled(true);
             String itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
             ItemMeta goldIngotMeta = event.getView().getItem(4).getItemMeta();
@@ -56,7 +61,6 @@ public class QuestCoinGuiListener implements Listener {
                 case "Finish" -> {
                     Player player = (Player) event.getWhoClicked();
                     finish(player, amount);
-                    player.closeInventory();
                 }
                 default -> {
                     return;
@@ -69,18 +73,20 @@ public class QuestCoinGuiListener implements Listener {
     }
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if(!(event.getPlayer() instanceof Player)) return;
-        if(event.getView().getTitle().endsWith(" coins")) {
-            ItemMeta goldIngotMeta = event.getView().getItem(4).getItemMeta();
-            String goldIngotName = ChatColor.stripColor(goldIngotMeta.getDisplayName());
-            int amount = Integer.parseInt(goldIngotName.substring(0, goldIngotName.indexOf(" ")));
-            Player player = (Player) event.getPlayer();
-            finish(player, amount);
+        if(!(event.getPlayer() instanceof Player player)) return;
+        String title = event.getView().getTitle();
+        if(!title.equals(coinTitle) && !title.endsWith(" coins")) return;
+        if(!isSet) {
+            questSystem.getQuestCreationManager().removeQuestCreator(player);
+            player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
         }
     }
 
     private void finish(Player player, int amount) {
-        questSystem.getQuestCreationManager().getQuestCreator(player).setCoinAmount(amount);
+        isSet = true;
+        QuestCreator creator =  questSystem.getQuestCreationManager().getQuestCreator(player);
+        creator.setCoinAmount(amount);
+        creator.openQuestRewardPrompt(QuestRewardType.ITEMS);
     }
 
     private String createMessage(int amount) {

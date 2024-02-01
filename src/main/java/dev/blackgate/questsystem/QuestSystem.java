@@ -1,22 +1,23 @@
 package dev.blackgate.questsystem;
 
 import dev.blackgate.questsystem.coin.CoinManager;
+import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
+import dev.blackgate.questsystem.commands.CommandManager;
 import dev.blackgate.questsystem.commands.subcommands.CreateQuestSubCommand;
 import dev.blackgate.questsystem.commands.subcommands.HelpSubCommand;
 import dev.blackgate.questsystem.database.Database;
-import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
-import dev.blackgate.questsystem.commands.CommandManager;
-import dev.blackgate.questsystem.quest.Quest;
-import dev.blackgate.questsystem.quest.creation.listeners.*;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestCoinGuiListener;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestItemsGuiListener;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestTypeListener;
+import dev.blackgate.questsystem.quest.creation.listeners.QuestXpGuiListener;
+import dev.blackgate.questsystem.util.Logger;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Logger;
 
 public class QuestSystem extends JavaPlugin {
     private CommandManager commandManager;
@@ -25,42 +26,38 @@ public class QuestSystem extends JavaPlugin {
     private PluginManager pluginManager;
     private CoinManager coinManager;
     private QuestCreationManager questCreationManager;
-    private final Logger logger = Bukkit.getLogger();
     @Override
     public void onEnable() {
-        //TODO Remove the stupid %stage% values and make each one a new entry in config
         // Order is very important
         saveDefaultConfig();
-        logger.info("Registering utility");
+        Logger.info("Registering utility");
         registerUtil();
-        logger.info("Registering managers");
+        Logger.info("Registering managers");
         registerManagers();
-        logger.info("Developled by JuicySeals");
-        logger.info("Registering listeners");
+        Logger.info("Developled by JuicySeals");
+        Logger.info("Registering listeners");
         registerListeners();
-        logger.info("Registering commands");
+        Logger.info("Registering commands");
         registerCommands();
-        logger.info("Registering subcommands");
+        Logger.info("Registering subcommands");
         registerSubCommands();
-
-        logger.info("Connecting to database");
+        Logger.info("Connecting to database");
         try {
             initDatabase();
         }catch (Exception e) {
-            logger.severe("Failed to connect to database!");
+            Logger.severe("Failed to connect to database!");
         }
-        logger.info("Finished");
+        Logger.info("Finished");
     }
 
     @Override
     public void onDisable() {
-        logger.info("Shutting down");
+        Logger.info("Shutting down");
     }
 
     private void registerListeners() {
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
         pluginManager.registerEvents(new QuestTypeListener(this), this);
-        pluginManager.registerEvents(new QuestRewardTypeListener(this), this);
         pluginManager.registerEvents(new QuestXpGuiListener(this), this);
         pluginManager.registerEvents(new QuestCoinGuiListener(this), this);
         pluginManager.registerEvents(new QuestItemsGuiListener(this), this);

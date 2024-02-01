@@ -2,7 +2,7 @@ package dev.blackgate.questsystem.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.Bukkit;
+import dev.blackgate.questsystem.util.Logger;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import static dev.blackgate.questsystem.util.UUIDConverter.toByteArray;
 
@@ -22,7 +21,6 @@ public class Database {
     private final String password;
     private final String databaseName;
     private HikariDataSource dataSource;
-    private final Logger logger;
 
     public Database(String host, int port, String username, String password, String databaseName) {
         this.host = host;
@@ -30,7 +28,6 @@ public class Database {
         this.username = username;
         this.databaseName = databaseName;
         this.password = password;
-        this.logger = Bukkit.getLogger();
         connect();
         createCoinTable();
         createQuestsTable();
@@ -46,8 +43,8 @@ public class Database {
         try {
             dataSource = new HikariDataSource(config);
         } catch (Exception exception) {
-            logger.severe("Failed to connect to the database: " + exception.getMessage());
-            exception.printStackTrace();
+            Logger.severe("Failed to connect to the database: " + exception.getMessage());
+            // Hikari prints exception already
         }
     }
 
@@ -80,7 +77,7 @@ public class Database {
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSetConsumer.accept(resultSet);
         } catch (SQLException e) {
-            logger.severe("Failed to execute query: " + query + ". Error: " + e.getMessage());
+            Logger.severe("Failed to execute query: " + query + ". Error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -99,7 +96,7 @@ public class Database {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            logger.severe("Failed to execute statement: " + statement + ". Error: " + e.getMessage());
+            Logger.severe("Failed to execute statement: " + statement + ". Error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -111,7 +108,7 @@ public class Database {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            logger.severe("Failed to execute statement: " + statement + ". Error: " + e.getMessage());
+            Logger.severe("Failed to execute statement: " + statement + ". Error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -127,7 +124,7 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            logger.severe("Failed to check if " + player.getName() + " is in the database. Error: " + e.getMessage());
+            Logger.severe("Failed to check if " + player.getName() + " is in the database. Error: " + e.getMessage());
             e.printStackTrace();
         }
 
