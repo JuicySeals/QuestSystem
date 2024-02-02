@@ -1,9 +1,9 @@
-package dev.blackgate.questsystem.quest.creation.gui;
+package dev.blackgate.questsystem.quest.creation.gui.reward;
 
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
-import dev.blackgate.questsystem.util.InventoryGUI;
+import dev.blackgate.questsystem.util.inventory.InventoryGUI;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

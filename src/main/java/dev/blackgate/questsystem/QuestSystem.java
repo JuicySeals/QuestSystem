@@ -5,10 +5,12 @@ import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
 import dev.blackgate.questsystem.commands.impl.CreateQuestSubCommand;
 import dev.blackgate.questsystem.commands.impl.HelpSubCommand;
+import dev.blackgate.questsystem.commands.impl.ViewQuestsSubCommand;
 import dev.blackgate.questsystem.database.Database;
+import dev.blackgate.questsystem.quest.QuestManager;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestGuiListener;
-import dev.blackgate.questsystem.util.InventoryManager;
+import dev.blackgate.questsystem.util.inventory.InventoryManager;
 import dev.blackgate.questsystem.util.Logger;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
@@ -25,6 +27,7 @@ public class QuestSystem extends JavaPlugin {
     private CoinManager coinManager;
     private QuestCreationManager questCreationManager;
     private InventoryManager inventoryManager;
+    private QuestManager questManager;
 
     @Override
     public void onEnable() {
@@ -66,6 +69,7 @@ public class QuestSystem extends JavaPlugin {
         pluginManager = Bukkit.getPluginManager();
         questCreationManager = new QuestCreationManager();
         inventoryManager = new InventoryManager();
+        questManager = new QuestManager();
     }
 
     private void registerCommands() {
@@ -79,6 +83,7 @@ public class QuestSystem extends JavaPlugin {
     private void registerSubCommands() {
         commandManager.registerSubCommand(new CreateQuestSubCommand(this));
         commandManager.registerSubCommand(new HelpSubCommand(this));
+        commandManager.registerSubCommand(new ViewQuestsSubCommand(this));
     }
 
     public CommandManager getCommandManager() {
@@ -113,5 +118,9 @@ public class QuestSystem extends JavaPlugin {
 
     public InventoryManager getInventoryManager() {
         return inventoryManager;
+    }
+
+    public QuestManager getQuestManager() {
+        return questManager;
     }
 }

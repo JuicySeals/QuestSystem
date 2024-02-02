@@ -1,10 +1,10 @@
-package dev.blackgate.questsystem.quest.creation.gui;
+package dev.blackgate.questsystem.quest.creation.gui.type;
 
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import dev.blackgate.questsystem.quest.enums.QuestType;
 import dev.blackgate.questsystem.util.Formatter;
-import dev.blackgate.questsystem.util.InventoryGUI;
+import dev.blackgate.questsystem.util.inventory.InventoryGUI;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -74,6 +74,7 @@ public class QuestTypeGui implements InventoryGUI {
 
     @Override
     public void onClick(InventoryClickEvent event) {
+        event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player player) || event.getCurrentItem() == null) {
             return;
         }
@@ -85,8 +86,8 @@ public class QuestTypeGui implements InventoryGUI {
         }
         isSet = true;
         questCreator.setQuestType(getQuestTypeFromItem(event.getCurrentItem()));
-        event.setCancelled(true);
     }
+
 
     @Override
     public void onClose(InventoryCloseEvent event) {

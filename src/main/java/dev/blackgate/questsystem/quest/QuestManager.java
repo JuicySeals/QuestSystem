@@ -16,4 +16,8 @@ public class QuestManager {
     public void unregisterQuest(Quest quest) {
         quests.remove(quest);
     }
+
+    public List<Quest> getQuests() {
+        return quests;
+    }
 }

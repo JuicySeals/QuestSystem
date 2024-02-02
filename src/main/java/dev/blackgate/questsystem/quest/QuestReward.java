@@ -5,21 +5,33 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class QuestReward {
     private final QuestRewardType rewardType;
     private List<?> rewards;
     private int xpAmount;
+    private int coinAmount;
 
     public QuestReward(QuestRewardType type, List<?> rewards) {
+        if(type != QuestRewardType.ITEMS && type != QuestRewardType.COMMAND) {
+            throw new IllegalArgumentException("To supply a list reward type must be items or commands");
+        }
         this.rewardType = type;
         this.rewards = rewards;
     }
 
-    public QuestReward(QuestRewardType type, int xpAmount) {
+    public QuestReward(QuestRewardType type, int amount) {
         this.rewardType = type;
-        this.xpAmount = xpAmount;
+        if(type == QuestRewardType.XP) {
+            this.xpAmount = amount;
+        }else if(rewardType == QuestRewardType.COINS) {
+            this.coinAmount = amount;
+        }else {
+            throw new IllegalArgumentException("To supply an integer reward type must be XP or coins.");
+        }
     }
 
     public QuestRewardType getRewardType() {
@@ -35,6 +47,21 @@ public class QuestReward {
             }
             case COMMAND -> executeCommands(player);
         }
+    }
+
+    public List<ItemStack> getItems() {
+        if(getRewardType() != QuestRewardType.ITEMS) throw new UnsupportedOperationException("Quest reward type is set to " + getRewardType());
+        return (List<ItemStack>) rewards;
+    }
+
+    public int getXpAmount() {
+        if(getRewardType() != QuestRewardType.XP) throw new UnsupportedOperationException("Quest reward type is set to " + getRewardType());
+        return xpAmount;
+    }
+
+    public int getCoinAmount() {
+        if(getRewardType() != QuestRewardType.COINS) throw new UnsupportedOperationException("Quest reward type is set to " + getRewardType());
+        return coinAmount;
     }
 
     private void giveXP(Player player) {
@@ -55,5 +82,9 @@ public class QuestReward {
                 throw new IllegalArgumentException("Reward type set to command but reward isn't a String.");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ((String) command).replace("%player%", player.getName()));
         }
+    }
+
+    public List<String> getCommands() {
+        return (List<String>) rewards;
     }
 }

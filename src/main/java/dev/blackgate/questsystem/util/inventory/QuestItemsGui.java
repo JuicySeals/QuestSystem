@@ -1,9 +1,6 @@
-package dev.blackgate.questsystem.quest.creation.gui;
+package dev.blackgate.questsystem.util.inventory;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.quest.creation.QuestCreator;
-import dev.blackgate.questsystem.quest.enums.QuestRewardType;
-import dev.blackgate.questsystem.util.InventoryGUI;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,12 +22,17 @@ public class QuestItemsGui implements InventoryGUI {
     private Inventory inventory;
     private boolean isSet;
     private QuestSystem questSystem;
+    private ItemsGui itemsGui;
 
     public QuestItemsGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
         this.isSet = false;
         this.questSystem = questSystem;
         create();
+    }
+
+    public void setHandler(ItemsGui itemsGui) {
+        this.itemsGui = itemsGui;
     }
 
     @Override
@@ -56,8 +58,7 @@ public class QuestItemsGui implements InventoryGUI {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)
-                || event.getCurrentItem() == null
+        if (event.getCurrentItem() == null
                 || !event.getCurrentItem().hasItemMeta()
                 || !event.getCurrentItem().getItemMeta().hasDisplayName()) {
             return;
@@ -88,14 +89,12 @@ public class QuestItemsGui implements InventoryGUI {
 
     private void finish(Player player, List<ItemStack> items) {
         isSet = true;
-        QuestCreator creator = questSystem.getQuestCreationManager().getQuestCreator(player);
-        creator.setItems(items);
         player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("added-items").replace("%value%", String.valueOf(items.size())));
-        creator.openQuestRewardPrompt(QuestRewardType.COMMAND);
         player.closeInventory();
+        itemsGui.onFinish(items, questSystem.getQuestCreationManager().getQuestCreator(player));
     }
 
-    private List<ItemStack> filterItems(List<ItemStack> items) {
+    public List<ItemStack> filterItems(List<ItemStack> items) {
         List<ItemStack> updatedItems = new ArrayList<>(items);
 
         Iterator<ItemStack> itemStackIterator = updatedItems.iterator();

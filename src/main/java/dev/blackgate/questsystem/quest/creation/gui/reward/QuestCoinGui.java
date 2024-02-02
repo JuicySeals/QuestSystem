@@ -1,9 +1,9 @@
-package dev.blackgate.questsystem.quest.creation.gui;
+package dev.blackgate.questsystem.quest.creation.gui.reward;
 
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
-import dev.blackgate.questsystem.util.InventoryGUI;
+import dev.blackgate.questsystem.util.inventory.InventoryGUI;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -81,13 +81,11 @@ public class QuestCoinGui implements InventoryGUI {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
+        event.setCancelled(true);
         if (event.getCurrentItem() == null) return;
         if (!event.getCurrentItem().hasItemMeta()) return;
         if (!event.getCurrentItem().getItemMeta().hasDisplayName()) return;
 
-        String title = event.getView().getTitle();
-        event.setCancelled(true);
         String itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
         ItemMeta goldIngotMeta = event.getView().getItem(4).getItemMeta();
         String goldIngotName = ChatColor.stripColor(goldIngotMeta.getDisplayName());

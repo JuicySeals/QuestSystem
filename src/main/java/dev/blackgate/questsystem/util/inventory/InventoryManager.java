@@ -1,4 +1,4 @@
-package dev.blackgate.questsystem.util;
+package dev.blackgate.questsystem.util.inventory;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
