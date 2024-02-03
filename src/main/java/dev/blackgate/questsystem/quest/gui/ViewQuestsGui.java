@@ -23,6 +23,7 @@ public class ViewQuestsGui implements InventoryGUI {
     private QuestManager questManager;
     private QuestSystem questSystem;
     private Inventory inventory;
+
     public ViewQuestsGui(QuestSystem questSystem) {
         this.questManager = questSystem.getQuestManager();
         this.questSystem = questSystem;
@@ -49,7 +50,7 @@ public class ViewQuestsGui implements InventoryGUI {
     public List<ItemStack> getItems() {
         List<Quest> quests = questManager.getQuests();
         List<ItemStack> items = setEdges();
-        for(int i = 0; i < quests.size(); i++) {
+        for (int i = 0; i < quests.size(); i++) {
             int invSlot = getNextEmptySlot(items);
             items.set(invSlot, createItem(quests.get(i)));
         }
@@ -57,8 +58,8 @@ public class ViewQuestsGui implements InventoryGUI {
     }
 
     private int getNextEmptySlot(List<ItemStack> items) {
-        for(int i = 0; i < items.size(); i++) {
-            if(items.get(i) == null) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) == null) {
                 return i;
             }
         }
@@ -72,7 +73,7 @@ public class ViewQuestsGui implements InventoryGUI {
         lore.add(ChatColor.YELLOW + quest.getDescription());
         lore.add(" ");
         lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "Rewards:");
-        for(QuestReward reward : quest.getRewards()) {
+        for (QuestReward reward : quest.getRewards()) {
             lore.add(createMessage(reward));
         }
         lore.add("");
@@ -97,9 +98,9 @@ public class ViewQuestsGui implements InventoryGUI {
 
     private List<ItemStack> setEdges() {
         List<ItemStack> itemStacks = Arrays.asList(new ItemStack[54]); // Can't use List#set() without there be an element. So this creates an list filled with null
-        int[] edgeSlots = {0,1,2,3,4,5,6,7,8,9,18,27,36,45,46,47,48,49,50,51,52,53,44,35,26,17};
+        int[] edgeSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 27, 36, 45, 46, 47, 48, 49, 50, 51, 52, 53, 44, 35, 26, 17};
         ItemStack edgeItem = getEdgeItem();
-        for(int i = 0; i < edgeSlots.length; i++) {
+        for (int i = 0; i < edgeSlots.length; i++) {
             itemStacks.set(edgeSlots[i], edgeItem);
         }
         return itemStacks;
@@ -120,6 +121,6 @@ public class ViewQuestsGui implements InventoryGUI {
 
     @Override
     public void onClose(InventoryCloseEvent event) {
-
+        // No actions need to be ran
     }
 }

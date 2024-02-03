@@ -27,6 +27,8 @@ quest-creation-messages:
   place-blocks-inventory: "&aPlace the blocks you want them to place"
   place-items-inventory: "&aPlace the items you want them to obtain"
   input-entity: "&aInput entity name"
+  input-permission: "&aInput permission"
   input-advancement-name: "&aInput advancement name"
   invalid-entity: "&cInvalid entity"
   invalid-advancement: "&cInvalid advancement"
+

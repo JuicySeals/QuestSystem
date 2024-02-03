@@ -23,6 +23,7 @@ public class QuestItemsGui implements InventoryGUI {
     private boolean isSet;
     private QuestSystem questSystem;
     private ItemsGui itemsGui;
+    private final String BUTTON_NAME = ChatColor.GREEN + "Finish%";
 
     public QuestItemsGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
@@ -50,7 +51,7 @@ public class QuestItemsGui implements InventoryGUI {
         List<ItemStack> items = new ArrayList<>();
         ItemStack finish = new ItemStack(Material.BAMBOO);
         ItemMeta finishMeta = finish.getItemMeta();
-        finishMeta.setDisplayName(ChatColor.GREEN + "Finish");
+        finishMeta.setDisplayName(BUTTON_NAME);
         finish.setItemMeta(finishMeta);
         items.add(finish);
         return items;
@@ -64,7 +65,7 @@ public class QuestItemsGui implements InventoryGUI {
             return;
         }
 
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Finish")) {
+        if (event.getCurrentItem().getItemMeta().getDisplayName().equals(BUTTON_NAME)) {
             List<ItemStack> items = Arrays.asList(event.getInventory().getContents());
             items = filterItems(items);
             finish((Player) event.getWhoClicked(), items);
@@ -100,14 +101,12 @@ public class QuestItemsGui implements InventoryGUI {
         Iterator<ItemStack> itemStackIterator = updatedItems.iterator();
         while (itemStackIterator.hasNext()) {
             ItemStack item = itemStackIterator.next();
-            if (item == null) {
-                itemStackIterator.remove();
-                continue;
-            }
-            if (item.getType() != Material.BAMBOO || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
-                continue;
-            }
-            if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Finish")) {
+
+            if (item == null
+                    || (item.getType() != Material.BAMBOO)
+                    || (!item.hasItemMeta())
+                    || (!item.getItemMeta().hasDisplayName())
+                    || (!item.getItemMeta().getDisplayName().equals(BUTTON_NAME))) {
                 itemStackIterator.remove();
             }
         }

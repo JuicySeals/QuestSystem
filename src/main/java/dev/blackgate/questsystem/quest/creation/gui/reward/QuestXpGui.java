@@ -3,8 +3,8 @@ package dev.blackgate.questsystem.quest.creation.gui.reward;
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
-import dev.blackgate.questsystem.util.inventory.InventoryGUI;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
+import dev.blackgate.questsystem.util.inventory.InventoryGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -84,7 +84,6 @@ public class QuestXpGui implements InventoryGUI {
         if (!event.getCurrentItem().hasItemMeta()) return;
         if (!event.getCurrentItem().getItemMeta().hasDisplayName()) return;
 
-        String title = event.getView().getTitle();
         event.setCancelled(true);
         String itemName = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
         ItemMeta expBottleMeta = event.getView().getItem(4).getItemMeta();

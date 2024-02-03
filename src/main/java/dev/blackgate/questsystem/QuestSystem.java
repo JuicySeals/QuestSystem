@@ -10,9 +10,9 @@ import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.quest.QuestManager;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestGuiListener;
-import dev.blackgate.questsystem.util.inventory.InventoryManager;
 import dev.blackgate.questsystem.util.Logger;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
+import dev.blackgate.questsystem.util.inventory.InventoryManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -33,23 +33,24 @@ public class QuestSystem extends JavaPlugin {
     public void onEnable() {
         // Order is very important
         saveDefaultConfig();
-        Logger.info("Registering utility");
-        registerUtil();
-        Logger.info("Registering managers");
-        registerManagers();
         Logger.info("Developled by JuicySeals");
-        Logger.info("Registering listeners");
-        registerListeners();
-        Logger.info("Registering commands");
-        registerCommands();
-        Logger.info("Registering subcommands");
-        registerSubCommands();
         Logger.info("Connecting to database");
         try {
             initDatabase();
         } catch (Exception e) {
             Logger.severe("Failed to connect to database!");
         }
+
+        Logger.info("Registering managers");
+        registerManagers();
+        Logger.info("Registering commands");
+        registerCommands();
+        Logger.info("Registering listeners");
+        registerListeners();
+        Logger.info("Registering subcommands");
+        registerSubCommands();
+        Logger.info("Registering utility");
+        registerUtil();
         Logger.info("Finished");
     }
 
@@ -69,7 +70,7 @@ public class QuestSystem extends JavaPlugin {
         pluginManager = Bukkit.getPluginManager();
         questCreationManager = new QuestCreationManager();
         inventoryManager = new InventoryManager();
-        questManager = new QuestManager();
+        questManager = new QuestManager(this);
     }
 
     private void registerCommands() {

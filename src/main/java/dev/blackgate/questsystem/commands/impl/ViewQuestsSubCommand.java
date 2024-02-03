@@ -9,9 +9,11 @@ import org.bukkit.entity.Player;
 
 public class ViewQuestsSubCommand implements SubCommand {
     private QuestSystem questSystem;
+
     public ViewQuestsSubCommand(QuestSystem questSystem) {
         this.questSystem = questSystem;
     }
+
     @Override
     public String getName() {
         return "view";

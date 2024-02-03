@@ -72,6 +72,7 @@ public class CommandConversation {
             String message = questSystem.getConfigHelper().getQuestCreationMessage("added-commands");
             message = message.replace("%value%", String.valueOf(commands.size()));
             player.sendMessage(message);
+            questSystem.getQuestCreationManager().getQuestCreator(player).setCommands(commands);
         });
         conversation.begin();
     }
