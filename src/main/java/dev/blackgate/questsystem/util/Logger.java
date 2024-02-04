@@ -22,5 +22,12 @@ public class Logger {
         Logger.severe(action);
         Logger.severe("Statement: " + query);
         Logger.severe("Message: " + throwable.getMessage());
+        throwable.printStackTrace();
+    }
+
+    public static void printException(String action, Throwable throwable) {
+        Logger.severe(action);
+        Logger.severe("Message: " + throwable.getMessage());
+        throwable.printStackTrace();
     }
 }

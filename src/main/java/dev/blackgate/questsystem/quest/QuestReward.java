@@ -9,10 +9,11 @@ import java.util.List;
 
 public class QuestReward {
     private final QuestRewardType rewardType;
+    private final static String WRONG_QUEST_TYPE = "Quest reward type is set to ";
     private List<?> rewards;
     private int xpAmount;
     private int coinAmount;
-    private final String WRONG_QUEST_TYPE = "Quest reward type is set to ";
+
     public QuestReward(QuestRewardType type, List<?> rewards) {
         if (type != QuestRewardType.ITEMS && type != QuestRewardType.COMMAND) {
             throw new IllegalArgumentException("To supply a list reward type must be items or commands");

@@ -5,20 +5,22 @@ import dev.blackgate.questsystem.quest.Quest;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.creation.conversations.CommandConversation;
 import dev.blackgate.questsystem.quest.creation.gui.reward.QuestCoinGui;
-import dev.blackgate.questsystem.quest.creation.gui.reward.QuestRewardItemGui;
+import dev.blackgate.questsystem.quest.creation.gui.reward.QuestRewardItemGuiHandler;
 import dev.blackgate.questsystem.quest.creation.gui.reward.QuestXpGui;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestBreakBlocksGui;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestObtainItemsGui;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestPlaceBlocksGui;
+import dev.blackgate.questsystem.quest.creation.gui.type.QuestBreakBlocksGuiHandler;
+import dev.blackgate.questsystem.quest.creation.gui.type.QuestObtainItemsGuiHandler;
+import dev.blackgate.questsystem.quest.creation.gui.type.QuestPlaceBlocksGuiHandler;
 import dev.blackgate.questsystem.quest.creation.gui.type.QuestTypeGui;
 import dev.blackgate.questsystem.quest.creation.signs.SignPrompt;
 import dev.blackgate.questsystem.quest.creation.signs.impl.*;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import dev.blackgate.questsystem.quest.enums.QuestType;
-import dev.blackgate.questsystem.util.inventory.ItemsGui;
-import dev.blackgate.questsystem.util.inventory.QuestItemsGui;
+import dev.blackgate.questsystem.util.inventory.types.item.ItemsGuiHandler;
+import dev.blackgate.questsystem.util.inventory.types.numberinput.NumberInputGui;
+import dev.blackgate.questsystem.util.inventory.types.item.ItemsGui;
 import org.apache.commons.text.WordUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -38,7 +40,8 @@ public class QuestCreator {
     private List<ItemStack> questObjectiveItems;
     private EntityType entityType;
     private Advancement advancement;
-    private String VALUE_PLACEHOLDER = "%value%";
+    private static final String VALUE_PLACEHOLDER = "%value%";
+
     public QuestCreator(Player player, QuestSystem questSystem) {
         this.player = player;
         this.questSystem = questSystem;
@@ -105,7 +108,7 @@ public class QuestCreator {
         switch (questType) {
             case BREAK_BLOCKS -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("break-blocks-inventory"));
-                openObjectiveItemPrompt(new QuestBreakBlocksGui());
+                openObjectiveItemPrompt(new QuestBreakBlocksGuiHandler());
             }
             case KILL_ENTITIES -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("input-entity"));
@@ -113,21 +116,21 @@ public class QuestCreator {
             }
             case PLACE_BLOCKS -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("place-blocks-inventory"));
-                openObjectiveItemPrompt(new QuestPlaceBlocksGui());
+                openObjectiveItemPrompt(new QuestPlaceBlocksGuiHandler());
             }
             case OBTAIN_ITEM -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("place-items-inventory"));
-                openObjectiveItemPrompt(new QuestObtainItemsGui());
+                openObjectiveItemPrompt(new QuestObtainItemsGuiHandler());
             }
             case GET_ACHIEVEMENT -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("input-advancement-name"));
-                openAchievmentSign();
+                openachievementSign();
             }
         }
     }
 
-    private void openObjectiveItemPrompt(ItemsGui handler) {
-        QuestItemsGui itemsGui = new QuestItemsGui(questSystem);
+    private void openObjectiveItemPrompt(ItemsGuiHandler handler) {
+        ItemsGui itemsGui = new ItemsGui(questSystem);
         itemsGui.setHandler(handler);
         itemsGui.open(player);
     }
@@ -139,9 +142,9 @@ public class QuestCreator {
 
     }
 
-    private void openAchievmentSign() {
-        AchievmentSign achievmentSign = new AchievmentSign(questSystem, this);
-        SignPrompt signPrompt = new SignPrompt(achievmentSign);
+    private void openachievementSign() {
+        AchievementSign achievementSign = new AchievementSign(questSystem, this);
+        SignPrompt signPrompt = new SignPrompt(achievementSign);
         signPrompt.open(player);
     }
 
@@ -161,19 +164,21 @@ public class QuestCreator {
                 conversation.start();
             }
             case XP -> {
-                QuestXpGui questXpGui = new QuestXpGui(questSystem);
-                questXpGui.open(player);
+                NumberInputGui numberInputGui = new NumberInputGui(questSystem, new ItemStack(Material.EXPERIENCE_BOTTLE), "level");
+                numberInputGui.setHandler(new QuestXpGui(questSystem.getQuestCreationManager()));
+                numberInputGui.open(player);
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("set-xp"));
             }
             case COINS -> {
-                QuestCoinGui questCoinGui = new QuestCoinGui(questSystem);
-                questCoinGui.open(player);
+                NumberInputGui numberInputGui = new NumberInputGui(questSystem, new ItemStack(Material.GOLD_INGOT), "coin");
+                numberInputGui.setHandler(new QuestCoinGui(questSystem.getQuestCreationManager()));
+                numberInputGui.open(player);
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("set-coins"));
             }
             case ITEMS -> {
-                QuestItemsGui questItemsGui = new QuestItemsGui(questSystem);
-                questItemsGui.setHandler(new QuestRewardItemGui());
-                questItemsGui.open(player);
+                ItemsGui itemsGui = new ItemsGui(questSystem);
+                itemsGui.setHandler(new QuestRewardItemGuiHandler());
+                itemsGui.open(player);
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("place-items"));
             }
         }

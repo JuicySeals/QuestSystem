@@ -1,6 +1,7 @@
 package dev.blackgate.questsystem.util.config;
 
 import dev.blackgate.questsystem.QuestSystem;
+import dev.blackgate.questsystem.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -37,7 +38,15 @@ public class ConfigHelper {
         return formatColor(fileConfig.getString(messageKey, ""));
     }
 
+    public String getSubCommandMessage(SubCommand subCommand, String message) {
+        return formatColor(fileConfig.getString("command-messages." + subCommand.getName() + "." + message));
+    }
+
     public String formatColor(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
+    public String getString(String path) {
+        return formatColor(fileConfig.getString(path));
     }
 }

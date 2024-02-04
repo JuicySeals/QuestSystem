@@ -23,7 +23,7 @@ public class CoinManager {
                     CREATE TABLE IF NOT EXISTS `coins` (`UUID` VARCHAR(36) NOT NULL,`amount` BIGINT NOT NULL DEFAULT 0,PRIMARY KEY (`UUID`));
                 """;
 
-        database.executeStatement(createTableSQL, null);
+        database.executeStatement(createTableSQL);
     }
 
     public CompletableFuture<Integer> getCoins(Player player) {

@@ -24,7 +24,7 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if ("TEST-PLAYER".equals(player.getName()))
-            return; // For unit tests (No possible side effects as real players can't have - in there name.)
+            return; // For unit tests (No possible side effects as real players can't have - in their name.)
         if (database == null) {
             return;
         }

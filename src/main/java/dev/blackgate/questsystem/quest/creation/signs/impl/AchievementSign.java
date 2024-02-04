@@ -12,11 +12,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 
-public class AchievmentSign implements SignHandler {
+public class AchievementSign implements SignHandler {
     private final QuestCreator questCreator;
     private final QuestSystem questSystem;
 
-    public AchievmentSign(QuestSystem questSystem, QuestCreator questCreator) {
+    public AchievementSign(QuestSystem questSystem, QuestCreator questCreator) {
         this.questCreator = questCreator;
         this.questSystem = questSystem;
     }

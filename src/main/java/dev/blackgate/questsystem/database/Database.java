@@ -21,12 +21,12 @@ public class Database {
     private final String databaseName;
     private HikariDataSource dataSource;
 
-    public Database(String host, int port, String username, String password, String databaseName) {
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.databaseName = databaseName;
-        this.password = password;
+    public Database(DatabaseCredentials credentials) {
+        this.host = credentials.getHost();
+        this.port = credentials.getPort();
+        this.username = credentials.getUsername();
+        this.databaseName = credentials.getDatabaseName();
+        this.password = credentials.getPassword();
         connect();
     }
 
@@ -47,32 +47,35 @@ public class Database {
 
     public CompletableFuture<CachedRowSet> executeQuery(String query, List<?> parameters) {
         return CompletableFuture.supplyAsync(() -> {
+            ResultSet resultSet = null;
             try (Connection connection = getConnection();
-                 PreparedStatement preparedStatement = prepareStatementWithParameters(query, parameters);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
-                CachedRowSet cachedRowSet = RowSetProvider.newFactory().createCachedRowSet();
-                cachedRowSet.populate(resultSet);
-                return cachedRowSet;
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                addParameters(preparedStatement, parameters);
+                resultSet = preparedStatement.executeQuery();
+                CachedRowSet rowSet = RowSetProvider.newFactory().createCachedRowSet();
+                rowSet.populate(resultSet);
+                return rowSet;
             } catch (SQLException e) {
                 throw new IllegalStateException(e);
+            }finally {
+                if(resultSet != null) try {
+                    resultSet.close();
+                } catch (SQLException ignored) {}
             }
         });
     }
 
-    private PreparedStatement prepareStatementWithParameters(String query, List<?> parameters) throws SQLException {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            for (int i = 0; i < parameters.size(); i++) {
-                preparedStatement.setObject(i + 1, parameters.get(i));
-            }
-            return preparedStatement;
+    private void addParameters(PreparedStatement statement, List<?> parameters) throws SQLException {
+        for (int i = 0; i < parameters.size(); i++) {
+            statement.setObject(i + 1, parameters.get(i));
         }
     }
 
     public CompletableFuture<Void> executeStatement(String statement, List<?> variables) {
         return CompletableFuture.supplyAsync(() -> {
             try (Connection connection = getConnection();
-                 PreparedStatement pstmt = prepareStatementWithParameters(statement, variables)) {
+                 PreparedStatement pstmt = connection.prepareStatement(statement)) {
+                addParameters(pstmt, variables);
                 pstmt.executeUpdate();
                 return null;
             } catch (SQLException e) {

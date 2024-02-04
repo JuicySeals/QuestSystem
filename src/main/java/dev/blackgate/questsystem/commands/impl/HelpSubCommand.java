@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 public class HelpSubCommand implements SubCommand {
-    QuestSystem questSystem;
+    final QuestSystem questSystem;
 
     public HelpSubCommand(QuestSystem questSystem) {
         this.questSystem = questSystem;

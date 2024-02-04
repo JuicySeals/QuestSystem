@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ViewQuestsSubCommand implements SubCommand {
-    private QuestSystem questSystem;
+    private final QuestSystem questSystem;
 
     public ViewQuestsSubCommand(QuestSystem questSystem) {
         this.questSystem = questSystem;

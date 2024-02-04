@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class QuestPermissionSign implements SignHandler {
-    private QuestCreator questCreator;
-    private QuestSystem questSystem;
+    private final QuestCreator questCreator;
+    private final QuestSystem questSystem;
 
     public QuestPermissionSign(QuestSystem questSystem, QuestCreator questCreator) {
         this.questCreator = questCreator;

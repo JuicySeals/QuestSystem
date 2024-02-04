@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class QuestGuiListener implements Listener {
-    private QuestSystem questSystem;
+    private final QuestSystem questSystem;
 
     public QuestGuiListener(QuestSystem questSystem) {
         this.questSystem = questSystem;

@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.database.Database;
+import dev.blackgate.questsystem.database.DatabaseCredentials;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.*;
 
@@ -20,7 +21,13 @@ class CoinManagerTests {
     public static void setUp() {
         server = MockBukkit.mock();
         questSystem = MockBukkit.load(QuestSystem.class);
-        database = new Database();
+        DatabaseCredentials credentials = new DatabaseCredentials()
+                .setHost("168.100.163.69")
+                .setPort(3306)
+                .setUsername("u249_l74SP9M2pT")
+                .setPassword("xwWwOiaGjmF@=53A^r3n72mn")
+                .setDatabaseName("s249_db");
+        database = new Database(credentials);
         coinManager = new CoinManager(database);
     }
 

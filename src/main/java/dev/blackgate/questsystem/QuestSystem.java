@@ -5,14 +5,17 @@ import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
 import dev.blackgate.questsystem.commands.impl.CreateQuestSubCommand;
 import dev.blackgate.questsystem.commands.impl.HelpSubCommand;
+import dev.blackgate.questsystem.commands.impl.ResetQuestsSubCommand;
 import dev.blackgate.questsystem.commands.impl.ViewQuestsSubCommand;
 import dev.blackgate.questsystem.database.Database;
+import dev.blackgate.questsystem.database.DatabaseCredentials;
 import dev.blackgate.questsystem.quest.QuestManager;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestGuiListener;
 import dev.blackgate.questsystem.util.Logger;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import dev.blackgate.questsystem.util.inventory.InventoryManager;
+import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -28,6 +31,7 @@ public class QuestSystem extends JavaPlugin {
     private QuestCreationManager questCreationManager;
     private InventoryManager inventoryManager;
     private QuestManager questManager;
+    private ItemPDC itemPDC;
 
     @Override
     public void onEnable() {
@@ -79,12 +83,14 @@ public class QuestSystem extends JavaPlugin {
 
     private void registerUtil() {
         configHelper = new ConfigHelper(this);
+        itemPDC = new ItemPDC(this);
     }
 
     private void registerSubCommands() {
         commandManager.registerSubCommand(new CreateQuestSubCommand(this));
         commandManager.registerSubCommand(new HelpSubCommand(this));
         commandManager.registerSubCommand(new ViewQuestsSubCommand(this));
+        commandManager.registerSubCommand(new ResetQuestsSubCommand(this));
     }
 
     public CommandManager getCommandManager() {
@@ -97,12 +103,13 @@ public class QuestSystem extends JavaPlugin {
 
     private void initDatabase() {
         FileConfiguration fc = getConfig();
-        String host = fc.getString("database.host");
-        int port = fc.getInt("database.port");
-        String username = fc.getString("database.username");
-        String password = fc.getString("database.password");
-        String databaseName = fc.getString("database.name");
-        database = new Database(host, port, username, password, databaseName);
+        DatabaseCredentials credentials = new DatabaseCredentials()
+                .setHost(fc.getString("database.host"))
+                .setPort(fc.getInt("database.port"))
+                .setDatabaseName(fc.getString("database.name"))
+                .setUsername(fc.getString("database.username"))
+                .setPassword(fc.getString("database.password"));
+        database = new Database(credentials);
     }
 
     public Database getDatabase() {
@@ -123,5 +130,9 @@ public class QuestSystem extends JavaPlugin {
 
     public QuestManager getQuestManager() {
         return questManager;
+    }
+
+    public ItemPDC getItemPDC() {
+        return itemPDC;
     }
 }

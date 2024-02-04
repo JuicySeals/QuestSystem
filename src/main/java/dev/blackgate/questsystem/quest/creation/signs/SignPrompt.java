@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 
 public class SignPrompt {
-    private SignHandler signHandler;
+    private final SignHandler signHandler;
     private de.rapha149.signgui.SignGUI signGUI;
 
     public SignPrompt(SignHandler handler) {

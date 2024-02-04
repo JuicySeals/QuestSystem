@@ -1,7 +1,9 @@
-package dev.blackgate.questsystem.util.inventory;
+package dev.blackgate.questsystem.util.inventory.types.item;
 
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
+import dev.blackgate.questsystem.util.inventory.InventoryGUI;
+import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,23 +19,25 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class QuestItemsGui implements InventoryGUI {
+public class ItemsGui implements InventoryGUI {
     private final ConfigHelper configHelper;
+    private static final String BUTTON_NAME = ChatColor.GREEN + "Finish";
     private Inventory inventory;
     private boolean isSet;
-    private QuestSystem questSystem;
-    private ItemsGui itemsGui;
-    private final String BUTTON_NAME = ChatColor.GREEN + "Finish%";
+    private final QuestSystem questSystem;
+    private ItemsGuiHandler itemsGuiHandler;
+    private final ItemPDC itemPDC;
 
-    public QuestItemsGui(QuestSystem questSystem) {
+    public ItemsGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
         this.isSet = false;
         this.questSystem = questSystem;
+        this.itemPDC = questSystem.getItemPDC();
         create();
     }
 
-    public void setHandler(ItemsGui itemsGui) {
-        this.itemsGui = itemsGui;
+    public void setHandler(ItemsGuiHandler itemsGuiHandler) {
+        this.itemsGuiHandler = itemsGuiHandler;
     }
 
     @Override
@@ -53,6 +57,9 @@ public class QuestItemsGui implements InventoryGUI {
         ItemMeta finishMeta = finish.getItemMeta();
         finishMeta.setDisplayName(BUTTON_NAME);
         finish.setItemMeta(finishMeta);
+
+        questSystem.getItemPDC().set(finish, "FINISH");
+
         items.add(finish);
         return items;
     }
@@ -65,7 +72,7 @@ public class QuestItemsGui implements InventoryGUI {
             return;
         }
 
-        if (event.getCurrentItem().getItemMeta().getDisplayName().equals(BUTTON_NAME)) {
+        if (itemPDC.isItem(event.getCurrentItem(), "FINISH")) {
             List<ItemStack> items = Arrays.asList(event.getInventory().getContents());
             items = filterItems(items);
             finish((Player) event.getWhoClicked(), items);
@@ -92,24 +99,17 @@ public class QuestItemsGui implements InventoryGUI {
         isSet = true;
         player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("added-items").replace("%value%", String.valueOf(items.size())));
         player.closeInventory();
-        itemsGui.onFinish(items, questSystem.getQuestCreationManager().getQuestCreator(player));
+        itemsGuiHandler.onFinish(items, questSystem.getQuestCreationManager().getQuestCreator(player));
     }
 
     public List<ItemStack> filterItems(List<ItemStack> items) {
         List<ItemStack> updatedItems = new ArrayList<>(items);
 
-        Iterator<ItemStack> itemStackIterator = updatedItems.iterator();
-        while (itemStackIterator.hasNext()) {
-            ItemStack item = itemStackIterator.next();
-
-            if (item == null
-                    || (item.getType() != Material.BAMBOO)
-                    || (!item.hasItemMeta())
-                    || (!item.getItemMeta().hasDisplayName())
-                    || (!item.getItemMeta().getDisplayName().equals(BUTTON_NAME))) {
-                itemStackIterator.remove();
-            }
-        }
+        updatedItems.removeIf(item -> item == null
+                || (item.getType() != Material.BAMBOO)
+                || (!item.hasItemMeta())
+                || (!item.getItemMeta().hasDisplayName())
+                || (!item.getItemMeta().getDisplayName().equals(BUTTON_NAME)));
         return updatedItems;
     }
 }

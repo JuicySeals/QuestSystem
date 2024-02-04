@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ViewQuestsGui implements InventoryGUI {
-    private QuestManager questManager;
-    private QuestSystem questSystem;
+    private final QuestManager questManager;
+    private final QuestSystem questSystem;
     private Inventory inventory;
 
     public ViewQuestsGui(QuestSystem questSystem) {
@@ -50,9 +50,9 @@ public class ViewQuestsGui implements InventoryGUI {
     public List<ItemStack> getItems() {
         List<Quest> quests = questManager.getQuests();
         List<ItemStack> items = setEdges();
-        for (int i = 0; i < quests.size(); i++) {
+        for (Quest quest : quests) {
             int invSlot = getNextEmptySlot(items);
-            items.set(invSlot, createItem(quests.get(i)));
+            items.set(invSlot, createItem(quest));
         }
         return items;
     }
@@ -72,7 +72,7 @@ public class ViewQuestsGui implements InventoryGUI {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.YELLOW + quest.getDescription());
         lore.add(" ");
-        lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "Rewards:");
+        lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "Rewards:"); // Cant apply 2 chatcolors together
         for (QuestReward reward : quest.getRewards()) {
             lore.add(createMessage(reward));
         }
@@ -97,14 +97,19 @@ public class ViewQuestsGui implements InventoryGUI {
     }
 
     private List<ItemStack> setEdges() {
-        List<ItemStack> itemStacks = Arrays.asList(new ItemStack[54]); // Can't use List#set() without there be an element. So this creates an list filled with null
+        List<ItemStack> itemStacks = new ArrayList<>();
         int[] edgeSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 27, 36, 45, 46, 47, 48, 49, 50, 51, 52, 53, 44, 35, 26, 17};
         ItemStack edgeItem = getEdgeItem();
-        for (int i = 0; i < edgeSlots.length; i++) {
-            itemStacks.set(edgeSlots[i], edgeItem);
+        for (int i = 0; i < 54; i++) {
+            final int currentIndex = i; // Variables used in lamda required final
+            itemStacks.add(Arrays.stream(edgeSlots) // More performant way to do it instead of 2 for loops
+                    .anyMatch(slot -> slot == currentIndex)
+                    ? edgeItem
+                    : null);
         }
         return itemStacks;
     }
+
 
     private ItemStack getEdgeItem() {
         ItemStack edgeItem = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);

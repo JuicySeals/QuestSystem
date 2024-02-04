@@ -6,6 +6,7 @@ import dev.blackgate.questsystem.quest.enums.QuestType;
 import dev.blackgate.questsystem.util.Formatter;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import dev.blackgate.questsystem.util.inventory.InventoryGUI;
+import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,14 +22,16 @@ import java.util.List;
 
 public class QuestTypeGui implements InventoryGUI {
     private Inventory inventory;
-    private ConfigHelper configHelper;
-    private QuestSystem questSystem;
+    private final ConfigHelper configHelper;
+    private final QuestSystem questSystem;
     private boolean isSet;
+    private final ItemPDC itemPDC;
 
     public QuestTypeGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
         this.questSystem = questSystem;
         this.isSet = false;
+        this.itemPDC = questSystem.getItemPDC();
         create();
     }
 
@@ -57,12 +60,19 @@ public class QuestTypeGui implements InventoryGUI {
         ItemStack killEntities = new ItemStack(Material.NETHERITE_SWORD);
         ItemStack placeBlocks = new ItemStack(Material.OAK_LOG);
         ItemStack obtainItems = new ItemStack(Material.NETHERITE_INGOT);
-        ItemStack getAchievment = new ItemStack(Material.EXPERIENCE_BOTTLE);
+        ItemStack getAchievement = new ItemStack(Material.EXPERIENCE_BOTTLE);
+
+        itemPDC.set(breakBlocks, "BREAK_BLOCKS");
+        itemPDC.set(killEntities, "KILL_ENTITIES");
+        itemPDC.set(placeBlocks, "PLACE_BLOCKS");
+        itemPDC.set(obtainItems, "OBTAIN_ITEMS");
+        itemPDC.set(getAchievement, "GET_ACHIEVEMENT");
+
         items.add(breakBlocks);
         items.add(killEntities);
         items.add(placeBlocks);
         items.add(obtainItems);
-        items.add(getAchievment);
+        items.add(getAchievement);
         for (int i = 0; i < 5; i++) {
             String name = Formatter.formatEnumName(QuestType.values()[i]);
             ItemMeta meta = items.get(i).getItemMeta();
@@ -99,12 +109,13 @@ public class QuestTypeGui implements InventoryGUI {
     }
 
     private QuestType getQuestTypeFromItem(ItemStack item) {
-        return switch (item.getType()) {
-            case NETHERITE_PICKAXE -> QuestType.BREAK_BLOCKS;
-            case NETHERITE_SWORD -> QuestType.KILL_ENTITIES;
-            case OAK_LOG -> QuestType.PLACE_BLOCKS;
-            case NETHERITE_INGOT -> QuestType.OBTAIN_ITEM;
-            case EXPERIENCE_BOTTLE -> QuestType.GET_ACHIEVEMENT;
+        if(itemPDC.getValue(item) == null) return null;
+        return switch (itemPDC.getValue(item)) {
+            case "BREAK_BLOCKS" -> QuestType.BREAK_BLOCKS;
+            case "KILL_ENTITIES" -> QuestType.KILL_ENTITIES;
+            case "PLACE_BLOCKS" -> QuestType.PLACE_BLOCKS;
+            case "OBTAIN_ITEMS" -> QuestType.OBTAIN_ITEM;
+            case "GET_ACHIEVEMENT" -> QuestType.GET_ACHIEVEMENT;
             default -> null;
         };
     }

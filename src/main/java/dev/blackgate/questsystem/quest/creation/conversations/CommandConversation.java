@@ -30,7 +30,7 @@ public class CommandConversation {
             @NotNull
             @Override
             public String getPromptText(@NotNull ConversationContext conversationContext) {
-                return ChatColor.GREEN + "Type command in chat without the slash. Type quit to stop adding commands";
+                return ChatColor.GREEN + "Type command in chat without the slash. Type quit to stop adding commands.\n%player% will return username";
             }
 
             @Nullable
@@ -69,10 +69,11 @@ public class CommandConversation {
                 .withModality(false);
         Conversation conversation = factory.buildConversation(player);
         conversation.addConversationAbandonedListener(conversationAbandonedEvent -> {
-            String message = questSystem.getConfigHelper().getQuestCreationMessage("added-commands");
-            message = message.replace("%value%", String.valueOf(commands.size()));
-            player.sendMessage(message);
+            if(conversationAbandonedEvent.gracefulExit()) return; // If graceful exit is false then they used exit sequence
             questSystem.getQuestCreationManager().getQuestCreator(player).setCommands(commands);
+            String message = questSystem.getConfigHelper().getQuestCreationMessage("added-commands");
+            message = message.replace("%value%", "0"); // Since this is the first prompt if they quit it will always be 0
+            player.sendMessage(message);
         });
         conversation.begin();
     }
@@ -84,10 +85,11 @@ public class CommandConversation {
                 .withLocalEcho(false);
         Conversation conversation = factory.buildConversation(player);
         conversation.addConversationAbandonedListener(conversationAbandonedEvent -> {
+            if(conversationAbandonedEvent.gracefulExit()) return; // If graceful exit is false then they used exit sequence
+            questSystem.getQuestCreationManager().getQuestCreator(player).setCommands(commands);
             String message = questSystem.getConfigHelper().getQuestCreationMessage("added-commands");
             message = message.replace("%value%", String.valueOf(commands.size()));
             player.sendMessage(message);
-            questSystem.getQuestCreationManager().getQuestCreator(player).setCommands(commands);
         });
         conversation.begin();
     }
