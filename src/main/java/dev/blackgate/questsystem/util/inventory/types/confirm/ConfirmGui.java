@@ -6,6 +6,7 @@ import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -64,6 +65,7 @@ public class ConfirmGui implements InventoryGUI {
         if (currentItem == null) return;
         event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
+
         if (itemPDC.isItem(currentItem, CANCEL_BUTTON) || itemPDC.isItem(currentItem, CONFIRM_BUTTON)) {
             isSet = true;
             if (itemPDC.isItem(currentItem, CANCEL_BUTTON)) {

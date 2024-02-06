@@ -7,6 +7,7 @@ import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -73,8 +74,9 @@ public class ItemsGui implements InventoryGUI {
         }
         if (itemPDC.isItem(event.getCurrentItem(), "FINISH")) {
             List<ItemStack> items = Arrays.asList(event.getInventory().getContents());
+            Player player = (Player) event.getWhoClicked();
             items = filterItems(items);
-            finish((Player) event.getWhoClicked(), items);
+            finish(player, items);
             event.setCancelled(true);
         }
     }
@@ -98,7 +100,7 @@ public class ItemsGui implements InventoryGUI {
         isSet = true;
         player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("added-items").replace("%value%", String.valueOf(items.size())));
         player.closeInventory();
-        itemsGuiHandler.onFinish(items, questSystem.getQuestCreationManager().getQuestCreator(player));
+        itemsGuiHandler.onFinish(items, questSystem.getQuestCreationManager().getQuestCreator(player), player);
     }
 
     public List<ItemStack> filterItems(List<ItemStack> items) {

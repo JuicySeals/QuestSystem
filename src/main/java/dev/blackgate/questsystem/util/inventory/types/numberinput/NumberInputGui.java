@@ -6,6 +6,7 @@ import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -100,6 +101,7 @@ public class NumberInputGui implements InventoryGUI {
         int amount = Integer.parseInt(iconName.substring(0, iconName.indexOf(" ")));
         String typeMessage;
         if(itemPDC.getValue(event.getCurrentItem()) == null) return;
+        Player player = (Player) event.getWhoClicked();
         switch (itemPDC.getValue(event.getCurrentItem())) {
             case "REMOVE_1" -> {
                 typeMessage = createMessage(amount - 1);
@@ -120,8 +122,11 @@ public class NumberInputGui implements InventoryGUI {
                 typeMessage = createMessage(amount + 10);
                 iconMeta.setDisplayName(typeMessage);
                 event.getView().setTitle(ChatColor.stripColor(typeMessage));
+
             }
-            case "FINISH" -> finish((Player) event.getWhoClicked(), amount);
+            case "FINISH" -> {
+                finish(player, amount);
+            }
             default -> {
                 return;
             }

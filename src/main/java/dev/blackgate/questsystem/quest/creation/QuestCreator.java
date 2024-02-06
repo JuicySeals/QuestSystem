@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuestCreator {
-    public final QuestSystem questSystem;
+    private final QuestSystem questSystem;
     private final Player player;
     private final List<QuestReward> questRewards;
     private String questName;
@@ -116,7 +116,7 @@ public class QuestCreator {
         switch (questType) {
             case BREAK_BLOCKS -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("break-blocks-inventory"));
-                openObjectiveItemPrompt(new QuestBreakBlocksGuiHandler());
+                openObjectiveItemPrompt(new QuestBreakBlocksGuiHandler(questSystem));
             }
             case KILL_ENTITIES -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("input-entity"));
@@ -124,11 +124,11 @@ public class QuestCreator {
             }
             case PLACE_BLOCKS -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("place-blocks-inventory"));
-                openObjectiveItemPrompt(new QuestPlaceBlocksGuiHandler());
+                openObjectiveItemPrompt(new QuestPlaceBlocksGuiHandler(questSystem));
             }
             case OBTAIN_ITEM -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("place-items-inventory"));
-                openObjectiveItemPrompt(new QuestObtainItemsGuiHandler());
+                openObjectiveItemPrompt(new QuestObtainItemsGuiHandler(questSystem));
             }
             case GET_ACHIEVEMENT -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("input-advancement-name"));

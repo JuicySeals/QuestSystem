@@ -29,6 +29,7 @@ public class EntityNameSign implements SignHandler {
         } else {
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("invalid-entity"));
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
+            questSystem.getQuestCreationManager().removeQuestCreator(player);
             return;
         }
         new BukkitRunnable() { // This fixed a stack overflow error by delaying it a tick

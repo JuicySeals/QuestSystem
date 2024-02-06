@@ -30,6 +30,7 @@ public class AchievementSign implements SignHandler {
         } else {
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("invalid-advancement"));
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
+            questSystem.getQuestCreationManager().removeQuestCreator(player);
             return;
         }
         new BukkitRunnable() {
