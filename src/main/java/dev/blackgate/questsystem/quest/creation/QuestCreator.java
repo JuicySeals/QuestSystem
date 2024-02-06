@@ -7,10 +7,7 @@ import dev.blackgate.questsystem.quest.creation.conversations.CommandConversatio
 import dev.blackgate.questsystem.quest.creation.gui.reward.QuestCoinGui;
 import dev.blackgate.questsystem.quest.creation.gui.reward.QuestRewardItemGuiHandler;
 import dev.blackgate.questsystem.quest.creation.gui.reward.QuestXpGui;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestBreakBlocksGuiHandler;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestObtainItemsGuiHandler;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestPlaceBlocksGuiHandler;
-import dev.blackgate.questsystem.quest.creation.gui.type.QuestTypeGui;
+import dev.blackgate.questsystem.quest.creation.gui.type.*;
 import dev.blackgate.questsystem.quest.creation.signs.SignPrompt;
 import dev.blackgate.questsystem.quest.creation.signs.impl.*;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
@@ -38,8 +35,8 @@ public class QuestCreator {
     private String permission;
     private QuestType questType;
     private List<ItemStack> questObjectiveItems;
-    private EntityType entityType;
-    private Advancement advancement;
+    private String questObjectiveTaskName; // Holds the entity name if kill entities is objective type or achievement name if get achievement objective type is selected
+    private int entityCount; // How many entities the player has to kill to finish
     private static final String VALUE_PLACEHOLDER = "%value%";
 
     public QuestCreator(Player player, QuestSystem questSystem) {
@@ -77,6 +74,12 @@ public class QuestCreator {
         signPrompt.open(player);
     }
 
+    public void openEntityCountPrompt() {
+        NumberInputGui numberInputGui = new NumberInputGui(questSystem, new ItemStack(Material.SKELETON_SKULL), "mob");
+        numberInputGui.setHandler(new QuestEntityCount(this));
+        numberInputGui.open(player);
+    }
+
     public void setPermission(String permission) {
         this.permission = permission;
     }
@@ -93,6 +96,11 @@ public class QuestCreator {
         player.sendMessage(message);
     }
 
+    public void setEntityCount(int count) {
+        this.entityCount = count;
+        openQuestRewardPrompt(QuestRewardType.XP);
+    }
+
     public void setQuestType(QuestType questType) {
         this.questType = questType;
         String message = questSystem.getConfigHelper().getQuestCreationMessage("set-type").replace(VALUE_PLACEHOLDER, formatEnumName(questType));
@@ -100,8 +108,8 @@ public class QuestCreator {
         openDetailsGui(questType);
     }
 
-    public void setEntityType(EntityType entityType) {
-        this.entityType = entityType;
+    public void setEntityType(String entityType) {
+        this.questObjectiveTaskName = entityType;
     }
 
     private void openDetailsGui(QuestType questType) {
@@ -124,7 +132,7 @@ public class QuestCreator {
             }
             case GET_ACHIEVEMENT -> {
                 player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("input-advancement-name"));
-                openachievementSign();
+                openAchievementSign();
             }
         }
     }
@@ -142,14 +150,14 @@ public class QuestCreator {
 
     }
 
-    private void openachievementSign() {
+    private void openAchievementSign() {
         AchievementSign achievementSign = new AchievementSign(questSystem, this);
         SignPrompt signPrompt = new SignPrompt(achievementSign);
         signPrompt.open(player);
     }
 
-    public void setAdvancement(Advancement advancement) {
-        this.advancement = advancement;
+    public void setAdvancement(String name) {
+        this.questObjectiveTaskName = name;
     }
 
     public void setCommands(List<String> commands) {
@@ -200,7 +208,13 @@ public class QuestCreator {
 
     private void create() {
         player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("finished-creating-quest"));
-        questSystem.getQuestManager().registerQuest(new Quest(questName, description, permission, questType, questRewards, questSystem.getDatabase()));
+        if(questObjectiveItems != null) {
+            questSystem.getQuestManager().registerQuest(new Quest(questName, description, permission, questType, questRewards, questObjectiveItems));
+        }else if(questType == QuestType.GET_ACHIEVEMENT){
+            questSystem.getQuestManager().registerQuest(new Quest(questName, description, permission, questType, questRewards, questObjectiveTaskName));
+        }else if(questType == QuestType.KILL_ENTITIES) {
+            questSystem.getQuestManager().registerQuest(new Quest(questName, description, permission, questType, questRewards, questObjectiveTaskName, entityCount));
+        }
     }
 
     public void setQuestObjectiveItems(List<ItemStack> items) {

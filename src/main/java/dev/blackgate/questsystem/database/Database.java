@@ -65,6 +65,25 @@ public class Database {
         });
     }
 
+    public CompletableFuture<CachedRowSet> executeQuery(String query) {
+        return CompletableFuture.supplyAsync(() -> {
+            ResultSet resultSet = null;
+            try (Connection connection = getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                resultSet = preparedStatement.executeQuery();
+                CachedRowSet rowSet = RowSetProvider.newFactory().createCachedRowSet();
+                rowSet.populate(resultSet);
+                return rowSet;
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            }finally {
+                if(resultSet != null) try {
+                    resultSet.close();
+                } catch (SQLException ignored) {}
+            }
+        });
+    }
+
     private void addParameters(PreparedStatement statement, List<?> parameters) throws SQLException {
         for (int i = 0; i < parameters.size(); i++) {
             statement.setObject(i + 1, parameters.get(i));
@@ -96,7 +115,7 @@ public class Database {
         });
     }
 
-    public Connection getConnection() throws SQLException {
+    private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 }

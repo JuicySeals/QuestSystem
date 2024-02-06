@@ -71,7 +71,6 @@ public class ItemsGui implements InventoryGUI {
                 || !event.getCurrentItem().getItemMeta().hasDisplayName()) {
             return;
         }
-
         if (itemPDC.isItem(event.getCurrentItem(), "FINISH")) {
             List<ItemStack> items = Arrays.asList(event.getInventory().getContents());
             items = filterItems(items);
@@ -103,13 +102,13 @@ public class ItemsGui implements InventoryGUI {
     }
 
     public List<ItemStack> filterItems(List<ItemStack> items) {
-        List<ItemStack> updatedItems = new ArrayList<>(items);
-
-        updatedItems.removeIf(item -> item == null
-                || (item.getType() != Material.BAMBOO)
-                || (!item.hasItemMeta())
-                || (!item.getItemMeta().hasDisplayName())
-                || (!item.getItemMeta().getDisplayName().equals(BUTTON_NAME)));
-        return updatedItems;
+        List<ItemStack> itemsCopy = new ArrayList<>(items);
+        itemsCopy.removeIf(item -> {
+           if(item == null) return true;
+           if(itemPDC.getValue(item) == null) return false;
+           if(itemPDC.getValue(item).equals("FINISH")) return true;
+           return false;
+        });
+        return itemsCopy;
     }
 }

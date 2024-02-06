@@ -26,7 +26,7 @@ public class AchievementSign implements SignHandler {
         String[] descriptionArray = signGUIResult.getLines();
         String advancementName = String.join("", descriptionArray);
         if (isValidAdvancement(advancementName)) {
-            questCreator.setAdvancement(getAdvancement(advancementName));
+            questCreator.setAdvancement(advancementName);
         } else {
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("invalid-advancement"));
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));

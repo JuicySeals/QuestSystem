@@ -65,11 +65,11 @@ public class ConfirmGui implements InventoryGUI {
         event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
         if (itemPDC.isItem(currentItem, CANCEL_BUTTON) || itemPDC.isItem(currentItem, CONFIRM_BUTTON)) {
+            isSet = true;
             if (itemPDC.isItem(currentItem, CANCEL_BUTTON)) {
                 cancel(player);
                 closeInventorySync(player);
                 confirmGuiHandler.onFinish(false, player);
-                isSet = true;
             } else {
                 closeInventorySync(player);
                 confirmGuiHandler.onFinish(true, player);

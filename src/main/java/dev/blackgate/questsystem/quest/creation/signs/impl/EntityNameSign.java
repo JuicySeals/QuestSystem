@@ -25,16 +25,16 @@ public class EntityNameSign implements SignHandler {
         entityName = entityName.toUpperCase();
         entityName = entityName.replace(" ", "_");
         if (isValidEntity(entityName)) {
-            questCreator.setEntityType(EntityType.valueOf(entityName));
+            questCreator.setEntityType(entityName);
         } else {
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("invalid-entity"));
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
             return;
         }
-        new BukkitRunnable() {
+        new BukkitRunnable() { // This fixed a stack overflow error by delaying it a tick
             @Override
             public void run() {
-                questCreator.openQuestRewardPrompt(QuestRewardType.XP);
+                questCreator.openEntityCountPrompt();
             }
         }.runTask(questSystem);
     }

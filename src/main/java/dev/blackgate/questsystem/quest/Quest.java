@@ -1,8 +1,9 @@
 package dev.blackgate.questsystem.quest;
 
-import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.quest.enums.QuestType;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Quest {
@@ -11,16 +12,49 @@ public class Quest {
     private final List<QuestReward> rewards;
     private final QuestType questType;
     private final String permission;
-    private final Database database;
+    private List<ItemStack> objectiveItems;
+    private int entityCount; // How many entities the player has to kill to finish
+    private String objectiveName;
     private int id;
-
-    public Quest(String questName, String description, String permission, QuestType questType, List<QuestReward> rewards, Database database) {
+    // Place blocks,break blocks,obtain items objective type constructor
+    public Quest(String questName, String description, String permission, QuestType questType, List<QuestReward> rewards, List<ItemStack> objectiveItems) {
         this.questName = questName;
         this.description = description;
         this.rewards = rewards;
         this.questType = questType;
         this.permission = permission;
-        this.database = database;
+        this.objectiveItems = objectiveItems;
+    }
+
+    // Get achievement
+    public Quest(String questName, String description, String permission, QuestType questType, List<QuestReward> rewards, String achievementName) {
+        this.questName = questName;
+        this.description = description;
+        this.rewards = rewards;
+        this.questType = questType;
+        this.permission = permission;
+        this.objectiveName = achievementName;
+    }
+
+    // Kill entity objevtive type
+    public Quest(String questName, String description, String permission, QuestType questType, List<QuestReward> rewards, String entityName, int entityCount) {
+        this.questName = questName;
+        this.description = description;
+        this.rewards = rewards;
+        this.questType = questType;
+        this.permission = permission;
+        this.objectiveName = entityName;
+        this.entityCount = entityCount;
+    }
+
+    // For loading quests through DB before gathering of other data
+    public Quest(int id, String questName, String description, String permission, QuestType questType) {
+        this.id = id;
+        this.questName = questName;
+        this.description = description;
+        this.questType = questType;
+        this.permission = permission;
+        this.rewards = new ArrayList<>();
     }
 
     public int getId() {
@@ -49,5 +83,16 @@ public class Quest {
 
     public String getPermission() {
         return permission;
+    }
+    public List<ItemStack> getObjectiveItems() {
+        return objectiveItems;
+    }
+
+    public int getEntityCount() {
+        return entityCount;
+    }
+
+    public String getObjectiveTaskName() { // Struggled to think of a describing title for this method. Returns the entity name or achievement name
+        return objectiveName;
     }
 }

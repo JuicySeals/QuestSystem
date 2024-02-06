@@ -5,6 +5,7 @@ import dev.blackgate.questsystem.quest.Quest;
 import dev.blackgate.questsystem.quest.QuestManager;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.util.inventory.InventoryGUI;
+import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,17 +24,19 @@ public class ViewQuestsGui implements InventoryGUI {
     private final QuestManager questManager;
     private final QuestSystem questSystem;
     private Inventory inventory;
+    private List<Quest> quests;
+    private ItemPDC itemPDC;
 
     public ViewQuestsGui(QuestSystem questSystem) {
         this.questManager = questSystem.getQuestManager();
         this.questSystem = questSystem;
+        this.itemPDC = questSystem.getItemPDC();
         create();
     }
 
     private void create() {
         inventory = Bukkit.createInventory(null, 54, "Quests - Page 1");
         inventory.setContents(getItems().toArray(new ItemStack[0]));
-        questSystem.getInventoryManager().registerHandledInventory(getInventory(), this);
     }
 
     @Override
@@ -43,12 +46,38 @@ public class ViewQuestsGui implements InventoryGUI {
 
     @Override
     public void open(Player player) {
-        player.openInventory(getInventory());
+        if(player.hasPermission("*") || player.isOp()) {
+            questSystem.getInventoryManager().registerHandledInventory(inventory, this);
+            player.openInventory(inventory);
+            return;
+        }
+        Inventory inventoryPlayerCopy = getInventory(); // Inventory copy
+        for (Quest quest : quests) {
+            if (!player.hasPermission(quest.getPermission())) {
+                int indexToRemove = getIndexToRemove(inventoryPlayerCopy, quest);
+                if (indexToRemove != -1) {
+                    inventoryPlayerCopy.setItem(indexToRemove, null);
+                }
+            }
+        }
+        questSystem.getInventoryManager().registerHandledInventory(inventoryPlayerCopy, this);
+        player.openInventory(inventoryPlayerCopy);
+    }
+
+    private int getIndexToRemove(Inventory inventory, Quest quest) {
+        ItemStack[] contents = inventory.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (itemPDC.isItem(item, quest.getQuestName().toUpperCase())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public List<ItemStack> getItems() {
-        List<Quest> quests = questManager.getQuests();
+        quests = questManager.getQuests();
         List<ItemStack> items = setEdges();
         for (Quest quest : quests) {
             int invSlot = getNextEmptySlot(items);
@@ -82,6 +111,7 @@ public class ViewQuestsGui implements InventoryGUI {
         meta.setLore(lore);
         meta.setDisplayName(quest.getQuestName());
         itemStack.setItemMeta(meta);
+        itemPDC.set(itemStack, quest.getQuestName().toUpperCase());
         return itemStack;
     }
 
@@ -126,6 +156,6 @@ public class ViewQuestsGui implements InventoryGUI {
 
     @Override
     public void onClose(InventoryCloseEvent event) {
-        // No actions need to be ran
+        questSystem.getInventoryManager().unregisterHandledInventory(event.getInventory());
     }
 }
