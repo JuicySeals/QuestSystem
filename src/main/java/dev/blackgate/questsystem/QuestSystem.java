@@ -1,7 +1,7 @@
 package dev.blackgate.questsystem;
 
-import dev.blackgate.questsystem.coin.CoinManager;
-import dev.blackgate.questsystem.coin.listeners.PlayerJoinListener;
+import dev.blackgate.questsystem.coin.CoinDatabaseManager;
+import dev.blackgate.questsystem.coin.listeners.PlayerCoinJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
 import dev.blackgate.questsystem.commands.impl.CreateQuestSubCommand;
 import dev.blackgate.questsystem.commands.impl.HelpSubCommand;
@@ -9,9 +9,11 @@ import dev.blackgate.questsystem.commands.impl.ResetQuestsSubCommand;
 import dev.blackgate.questsystem.commands.impl.ViewQuestsSubCommand;
 import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.database.DatabaseCredentials;
+import dev.blackgate.questsystem.database.ProgressionDatabaseManager;
 import dev.blackgate.questsystem.quest.QuestManager;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestGuiListener;
+import dev.blackgate.questsystem.quest.listeners.PlayerJoinQuestInfoListener;
 import dev.blackgate.questsystem.util.Logger;
 import dev.blackgate.questsystem.util.config.ConfigHelper;
 import dev.blackgate.questsystem.util.inventory.InventoryManager;
@@ -27,10 +29,11 @@ public class QuestSystem extends JavaPlugin {
     private Database database;
     private ConfigHelper configHelper;
     private PluginManager pluginManager;
-    private CoinManager coinManager;
+    private CoinDatabaseManager coinDatabaseManager;
     private QuestCreationManager questCreationManager;
     private InventoryManager inventoryManager;
     private QuestManager questManager;
+    private ProgressionDatabaseManager progressionDatabaseManager;
     private ItemPDC itemPDC;
 
     @Override
@@ -44,7 +47,8 @@ public class QuestSystem extends JavaPlugin {
         } catch (Exception e) {
             Logger.severe("Failed to connect to database!");
         }
-
+        Logger.info("Registering utility");
+        registerUtil();
         Logger.info("Registering managers");
         registerManagers();
         Logger.info("Registering commands");
@@ -53,8 +57,6 @@ public class QuestSystem extends JavaPlugin {
         registerListeners();
         Logger.info("Registering subcommands");
         registerSubCommands();
-        Logger.info("Registering utility");
-        registerUtil();
         Logger.info("Finished");
     }
 
@@ -64,17 +66,19 @@ public class QuestSystem extends JavaPlugin {
     }
 
     private void registerListeners() {
-        pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        pluginManager.registerEvents(new PlayerCoinJoinListener(this), this);
         pluginManager.registerEvents(new QuestGuiListener(this), this);
+        pluginManager.registerEvents(new PlayerJoinQuestInfoListener(this), this);
     }
 
     private void registerManagers() {
         commandManager = new CommandManager(this);
-        coinManager = new CoinManager(database);
+        coinDatabaseManager = new CoinDatabaseManager(database);
         pluginManager = Bukkit.getPluginManager();
         questCreationManager = new QuestCreationManager();
         inventoryManager = new InventoryManager();
         questManager = new QuestManager(this);
+        progressionDatabaseManager = new ProgressionDatabaseManager(this);
     }
 
     private void registerCommands() {
@@ -116,8 +120,8 @@ public class QuestSystem extends JavaPlugin {
         return database;
     }
 
-    public CoinManager getCoinManager() {
-        return coinManager;
+    public CoinDatabaseManager getCoinManager() {
+        return coinDatabaseManager;
     }
 
     public QuestCreationManager getQuestCreationManager() {
@@ -135,4 +139,5 @@ public class QuestSystem extends JavaPlugin {
     public ItemPDC getItemPDC() {
         return itemPDC;
     }
+    public ProgressionDatabaseManager getProgressionManager() {return progressionDatabaseManager;}
 }

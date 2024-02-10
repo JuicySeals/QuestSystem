@@ -1,6 +1,8 @@
 package dev.blackgate.questsystem.quest;
 
 import dev.blackgate.questsystem.quest.enums.QuestType;
+import dev.blackgate.questsystem.util.config.ConfigHelper;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -91,7 +93,6 @@ public class Quest {
     public int getEntityCount() {
         return entityCount;
     }
-
     public String getObjectiveTaskName() { // Struggled to think of a describing title for this method. Returns the entity name or achievement name
         return objectiveName;
     }

@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ public class ViewQuestsGui implements InventoryGUI {
     private Inventory inventory;
     private List<Quest> quests;
     private ItemPDC itemPDC;
+    private static final String MY_QUESTS = "MY_QUESTS";
 
     public ViewQuestsGui(QuestSystem questSystem) {
         this.questManager = questSystem.getQuestManager();
@@ -35,7 +37,7 @@ public class ViewQuestsGui implements InventoryGUI {
     }
 
     private void create() {
-        inventory = Bukkit.createInventory(null, 54, "Quests - Page 1");
+        inventory = Bukkit.createInventory(null, 54, "Quests");
         inventory.setContents(getItems().toArray(new ItemStack[0]));
     }
 
@@ -46,29 +48,30 @@ public class ViewQuestsGui implements InventoryGUI {
 
     @Override
     public void open(Player player) {
+        Inventory inventoryPlayerCopy = getInventory(); // Inventory copy
+        inventoryPlayerCopy.setItem(49, createMyQuestsItem(player));
         if(player.hasPermission("*") || player.isOp()) {
-            questSystem.getInventoryManager().registerHandledInventory(inventory, this);
-            player.openInventory(inventory);
+            questSystem.getInventoryManager().registerHandledInventory(inventoryPlayerCopy, this);
+            player.openInventory(inventoryPlayerCopy);
             return;
         }
-        Inventory inventoryPlayerCopy = getInventory(); // Inventory copy
         for (Quest quest : quests) {
             if (!player.hasPermission(quest.getPermission())) {
-                int indexToRemove = getIndexToRemove(inventoryPlayerCopy, quest);
+                int indexToRemove = getQuestSlot(inventoryPlayerCopy, quest);
                 if (indexToRemove != -1) {
                     inventoryPlayerCopy.setItem(indexToRemove, null);
                 }
             }
         }
-        questSystem.getInventoryManager().registerHandledInventory(inventoryPlayerCopy, this);
+        questSystem.getInventoryManager().registerHandledInventory(inventoryPlayerCopy, this); // Have to register as it wont equal as items changed
         player.openInventory(inventoryPlayerCopy);
     }
 
-    private int getIndexToRemove(Inventory inventory, Quest quest) {
+    private int getQuestSlot(Inventory inventory, Quest quest) {
         ItemStack[] contents = inventory.getContents();
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
-            if (itemPDC.isItem(item, quest.getQuestName().toUpperCase())) {
+            if (itemPDC.isItem(item, quest.getQuestName())) {
                 return i;
             }
         }
@@ -84,6 +87,17 @@ public class ViewQuestsGui implements InventoryGUI {
             items.set(invSlot, createItem(quest));
         }
         return items;
+    }
+
+    private ItemStack createMyQuestsItem(Player player) {
+        ItemStack myQuestsItem = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta itemMeta = (SkullMeta) myQuestsItem.getItemMeta();
+        itemMeta.setOwnerProfile(player.getPlayerProfile());
+        itemMeta.setDisplayName(ChatColor.GREEN + "My quests");
+        itemMeta.setLore(List.of("", ChatColor.YELLOW + "Click to view your quests"));
+        myQuestsItem.setItemMeta(itemMeta);
+        itemPDC.set(myQuestsItem, MY_QUESTS);
+        return myQuestsItem;
     }
 
     private int getNextEmptySlot(List<ItemStack> items) {
@@ -111,7 +125,7 @@ public class ViewQuestsGui implements InventoryGUI {
         meta.setLore(lore);
         meta.setDisplayName(quest.getQuestName());
         itemStack.setItemMeta(meta);
-        itemPDC.set(itemStack, quest.getQuestName().toUpperCase());
+        itemPDC.set(itemStack, quest.getQuestName()); // No uppercase like the rest to make quest retrieval easier
         return itemStack;
     }
 
@@ -120,7 +134,13 @@ public class ViewQuestsGui implements InventoryGUI {
         switch (questReward.getRewardType()) {
             case XP -> message += questReward.getXpAmount() + " XP levels";
             case COINS -> message += questReward.getCoinAmount() + " coins";
-            case ITEMS -> message += questReward.getItems().size() + " items";
+            case ITEMS -> {
+                int amount = 0;
+                for(ItemStack item : questReward.getItems()) {
+                    amount += item.getAmount();
+                }
+                message += amount + " items";
+            }
             case COMMAND -> message += questReward.getCommands().size() + " commands";
         }
         return message;
@@ -149,9 +169,25 @@ public class ViewQuestsGui implements InventoryGUI {
         return edgeItem;
     }
 
+    private Quest getQuest(ItemStack itemStack) {
+        return questSystem.getQuestManager().getQuest(itemPDC.getValue(itemStack));
+    }
+
     @Override
     public void onClick(InventoryClickEvent event) {
         event.setCancelled(true);
+        ItemStack item = event.getCurrentItem();
+        Player player = (Player) event.getWhoClicked();
+        if(item == null) return;
+        if(itemPDC.isItem(item, MY_QUESTS)) {
+            ViewInProgressQuestsGui viewInProgressQuests = new ViewInProgressQuestsGui(questSystem);
+            viewInProgressQuests.open(player);
+            return;
+        }
+        Quest quest = getQuest(event.getCurrentItem());
+        if(quest == null) return;
+        questSystem.getProgressionManager().addPlayer(player, quest);
+        player.closeInventory();
     }
 
     @Override

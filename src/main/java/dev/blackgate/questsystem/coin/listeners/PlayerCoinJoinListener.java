@@ -1,7 +1,7 @@
 package dev.blackgate.questsystem.coin.listeners;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.coin.CoinManager;
+import dev.blackgate.questsystem.coin.CoinDatabaseManager;
 import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.util.Logger;
 import org.bukkit.entity.Player;
@@ -11,13 +11,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.concurrent.CompletableFuture;
 
-public class PlayerJoinListener implements Listener {
+public class PlayerCoinJoinListener implements Listener {
     private final Database database;
-    private final CoinManager coinManager;
+    private final CoinDatabaseManager coinDatabaseManager;
 
-    public PlayerJoinListener(QuestSystem questSystem) {
+    public PlayerCoinJoinListener(QuestSystem questSystem) {
         this.database = questSystem.getDatabase();
-        this.coinManager = questSystem.getCoinManager();
+        this.coinDatabaseManager = questSystem.getCoinManager();
     }
 
     @EventHandler
@@ -28,14 +28,14 @@ public class PlayerJoinListener implements Listener {
         if (database == null) {
             return;
         }
-        CompletableFuture<Boolean> completableFuture = coinManager.isPlayerInDatabase(player);
+        CompletableFuture<Boolean> completableFuture = coinDatabaseManager.isPlayerInDatabase(player);
         completableFuture.whenComplete(((isInDb, exception) -> {
             if (exception != null) {
                 Logger.severe(String.format("Failed to check if %s is in coin database", player.getName()));
                 return;
             }
             if (!isInDb) {
-                coinManager.addPlayer(player);
+                coinDatabaseManager.addPlayer(player);
             }
         }));
     }

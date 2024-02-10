@@ -6,7 +6,9 @@ import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import dev.blackgate.questsystem.quest.enums.QuestType;
 import dev.blackgate.questsystem.util.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.checkerframework.checker.units.qual.C;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
@@ -15,19 +17,17 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class QuestLoader {
     private Database database;
     private List<Quest> quests;
-    private List<CompletableFuture<Void>> futures;
+    private CompletableFuture<Void> finishedLoading;
     public QuestLoader(Database database) {
         this.database = database;
         this.quests = new ArrayList<>();
-        this.futures = new ArrayList<>();
+        this.finishedLoading = new CompletableFuture<>();
         load();
     }
 
@@ -37,69 +37,58 @@ public class QuestLoader {
                 Logger.printException("Failed to get quests", throwable);
                 return;
             }
-
-            for (Quest quest : questsLoaded) {
+            Iterator<Quest> iterator = questsLoaded.iterator();
+            while (iterator.hasNext()) {
+                Quest quest = iterator.next();
                 int id = quest.getId();
+
                 List<QuestReward> questRewards = new ArrayList<>();
                 List<ItemStack> objectiveItems = new ArrayList<>();
+
                 QuestType questType = quest.getQuestType();
+
                 CompletableFuture<List<QuestReward>> getQuestRewards = getQuestRewards(id);
                 CompletableFuture<QuestReward> getQuestRewardCommands = getQuestRewardCommands(id);
                 CompletableFuture<QuestReward> getQuestRewardItems = getQuestRewardItems(id);
                 CompletableFuture<List<ItemStack>> getObjectiveItems = getObjectiveItems(id);
-                CompletableFuture[] questFutures = {getQuestRewards, getQuestRewardCommands, getQuestRewardItems, getObjectiveItems};
-                getQuestRewards.whenComplete((rewards, rewardsThrowable) -> {
-                    if (throwable != null) {
-                        Logger.printException("Failed to get quest rewards", rewardsThrowable);
-                        return;
-                    }
-                    questRewards.addAll(rewards);
-                });
-                getQuestRewardCommands.whenComplete((reward, rewardsThrowable) -> {
-                    if(throwable != null) {
-                        Logger.printException("Failed to get quest rewards", rewardsThrowable);
-                        return;
-                    }
-                    questRewards.add(reward);
-                });
-                getQuestRewardItems.whenComplete((reward, rewardsThrowable) -> {
-                    if(throwable != null) {
-                        Logger.printException("Failed to get quest rewards", rewardsThrowable);
-                        return;
-                    }
-                    questRewards.add(reward);
-                });
-                getObjectiveItems.whenComplete((items, rewardsThrowable) -> {
-                    if(throwable != null) {
-                        Logger.printException("Failed to get quest rewards", rewardsThrowable);
-                        return;
-                    }
-                    objectiveItems.addAll(items);
-                });
-                CompletableFuture<Void> allFutures = CompletableFuture.allOf(questFutures);
-                futures.add(allFutures);
-                allFutures.whenCompleteAsync((unused, exception) -> {
+                CompletableFuture<?>[] questFutures = {getQuestRewards, getQuestRewardCommands, getQuestRewardItems, getObjectiveItems};
+
+                getQuestRewards.whenComplete((rewards, rewardsThrowable) -> questRewards.addAll(rewards));
+                getQuestRewardCommands.whenComplete((reward, rewardsThrowable) -> questRewards.add(reward));
+                getQuestRewardItems.whenComplete((reward, rewardsThrowable) -> questRewards.add(reward));
+                getObjectiveItems.whenComplete((items, rewardsThrowable) -> objectiveItems.addAll(items));
+
+                CompletableFuture<Void> rewardFutures = CompletableFuture.allOf(questFutures);
+                boolean lastLoop = !iterator.hasNext();
+                rewardFutures.whenCompleteAsync((unused, exception) -> {
                     if (exception != null) {
                         Logger.printException("Failed to complete all asynchronous operations loading quests", exception);
                         return;
                     }
-                    if(questType == QuestType.KILL_ENTITIES) {
+                    Quest questToAdd;
+                    if (questType == QuestType.KILL_ENTITIES) {
                         CompletableFuture<Integer> entityCount = getEntityCount(id);
                         CompletableFuture<String> entityName = getEntityName(id);
-                        quests.add(new Quest(quest.getQuestName() ,quest.getDescription(), quest.getPermission(), quest.getQuestType(), questRewards, entityName.join(), entityCount.join())); // Blocks the async thread (Not a problem)
-                    }else if(questType == QuestType.GET_ACHIEVEMENT) {
+                        questToAdd = new Quest(quest.getQuestName(), quest.getDescription(), quest.getPermission(), quest.getQuestType(), questRewards, entityName.join(), entityCount.join());
+                    } else if (questType == QuestType.GET_ACHIEVEMENT) {
                         CompletableFuture<String> achievementName = getAchievementName(id);
-                        quests.add(new Quest(quest.getQuestName() ,quest.getDescription(), quest.getPermission(), quest.getQuestType(), questRewards, achievementName.join())); // Blocks the async thread (Not a problem)
-                    }else {
-                        quests.add(new Quest(quest.getQuestName() ,quest.getDescription(), quest.getPermission(), quest.getQuestType(), questRewards, objectiveItems));
+                        questToAdd = new Quest(quest.getQuestName(), quest.getDescription(), quest.getPermission(), quest.getQuestType(), questRewards, achievementName.join()); // Blocks the async thread (Not a problem)
+                    } else {
+                        questToAdd = new Quest(quest.getQuestName(), quest.getDescription(), quest.getPermission(), quest.getQuestType(), questRewards, objectiveItems);
+                    }
+                    questToAdd.setId(id);
+                    quests.add(questToAdd);
+                    if(lastLoop) {
+                        finishedLoading.complete(null);
                     }
                 });
             }
         });
+
     }
 
     public CompletableFuture<List<Quest>> getDatabaseQuests() {
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenApplyAsync((unused) -> quests);
+        return finishedLoading.thenApply(unused -> quests);
     }
 
     private CompletableFuture<List<Quest>> getQuests() {

@@ -34,6 +34,11 @@ quest-creation-messages:
   input-advancement-name: "&aInput advancement name"
   invalid-entity: "&cInvalid entity"
   invalid-advancement: "&cInvalid advancement"
+quest:
+  quest-start: "&aStarted %quest_name% quest!"
+  already-in-quest: "&cYou are already in a quest!"
 confirm-gui:
   cancel-message: "&aCancelled"
-
+player-join-message: # Variables: %quest_name%, %quest_progress%, %quest_progress_needed%, %player_name%
+  - "&aWelcome %player_name%"
+  - "&aYou are %quest_progress%/%quest_progress_needed% on your %quest_name% quest"

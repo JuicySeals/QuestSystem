@@ -69,11 +69,11 @@ public class CommandConversation {
                 .withModality(false);
         Conversation conversation = factory.buildConversation(player);
         conversation.addConversationAbandonedListener(conversationAbandonedEvent -> {
-            if(conversationAbandonedEvent.gracefulExit()) return; // If graceful exit is false then they used exit sequence
-            questSystem.getQuestCreationManager().getQuestCreator(player).setCommands(commands);
+            if(conversationAbandonedEvent.gracefulExit()) return; // If graceful exit is false then they used exit sequence\
             String message = questSystem.getConfigHelper().getQuestCreationMessage("added-commands");
             message = message.replace("%value%", "0"); // Since this is the first prompt if they quit it will always be 0
             player.sendMessage(message);
+            questSystem.getQuestCreationManager().getQuestCreator(player).setCommands(commands);
         });
         conversation.begin();
     }

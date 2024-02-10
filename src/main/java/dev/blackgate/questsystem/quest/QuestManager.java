@@ -1,6 +1,7 @@
 package dev.blackgate.questsystem.quest;
 
 import dev.blackgate.questsystem.QuestSystem;
+import dev.blackgate.questsystem.commands.SubCommand;
 import dev.blackgate.questsystem.database.QuestDatabaseManager;
 import dev.blackgate.questsystem.database.QuestLoader;
 import dev.blackgate.questsystem.util.Logger;
@@ -19,7 +20,7 @@ public class QuestManager {
 
     public QuestManager(QuestSystem questSystem) {
         this.questSystem = questSystem;
-        databaseManager = new QuestDatabaseManager(questSystem);
+        this.databaseManager = new QuestDatabaseManager(questSystem);
         loadQuests();
     }
 
@@ -27,7 +28,7 @@ public class QuestManager {
         QuestLoader questLoader = new QuestLoader(questSystem.getDatabase());
         Logger.info("Loading quests...");
         Logger.info("This may take some time.");
-        quests = questLoader.getDatabaseQuests().join();
+        quests = questLoader.getDatabaseQuests().join(); // Only on startup so its ok
         Logger.info("Finished loading quests");
     }
 
@@ -43,17 +44,22 @@ public class QuestManager {
             databaseManager.processObjective(quest);
             quests.add(quest);
         }));
-
     }
 
     public void resetDatabases() {
         databaseManager.resetDatabases();
     }
-    public void unregisterQuest(Quest quest) {
-        quests.remove(quest);
-    }
-
     public List<Quest> getQuests() {
         return quests;
     }
+    public Quest getQuest(String name) {
+        for (Quest quest : getQuests()) {
+            System.out.println(quest.getId());
+            if (quest.getQuestName().equals(name)) {
+                return quest;
+            }
+        }
+        return null;
+    }
+
 }

@@ -38,11 +38,16 @@ public class ConfigHelper {
         return formatColor(fileConfig.getString(messageKey, ""));
     }
 
-    public String getSubCommandMessage(SubCommand subCommand, String message) {
-        return formatColor(fileConfig.getString("command-messages." + subCommand.getName() + "." + message));
+    public String getQuestMessage(String message) {
+        String messageKey = "quest." + message;
+        return formatColor(fileConfig.getString(messageKey, ""));
     }
 
-    public String formatColor(String s) {
+    public String getSubCommandMessage(SubCommand subCommand, String message) {
+        return formatColor(fileConfig.getString("command-messages." + subCommand.getName() + "." + message, ""));
+    }
+
+    public static String formatColor(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
 
