@@ -20,11 +20,7 @@ class CoinDatabaseManagerTests {
         server = MockBukkit.mock();
         MockBukkit.load(QuestSystem.class);
         DatabaseCredentials credentials = new DatabaseCredentials()
-                .setHost("168.100.163.69")
-                .setPort(3306)
-                .setDatabaseName("s249_db")
-                .setUsername("u249_l74SP9M2pT")
-                .setPassword("c5Z1lYj9des.HaGkb7B3OtKv");
+            
         Database database = new Database(credentials);
         coinDatabaseManager = new CoinDatabaseManager(database);
     }
