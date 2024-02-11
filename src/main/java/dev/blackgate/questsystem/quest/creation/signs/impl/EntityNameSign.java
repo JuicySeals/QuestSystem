@@ -4,7 +4,6 @@ import de.rapha149.signgui.SignGUIResult;
 import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.creation.QuestCreator;
 import dev.blackgate.questsystem.quest.creation.signs.SignHandler;
-import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

@@ -43,6 +43,11 @@ public class Database {
             Logger.severe("Failed to connect to the database: " + exception.getMessage());
             // Hikari prints exception already
         }
+
+    }
+
+    public boolean isConnected() {
+        return dataSource != null;
     }
 
     public CompletableFuture<CachedRowSet> executeQuery(String query, List<?> parameters) {
@@ -57,10 +62,11 @@ public class Database {
                 return rowSet;
             } catch (SQLException e) {
                 throw new IllegalStateException(e);
-            }finally {
-                if(resultSet != null) try {
+            } finally {
+                if (resultSet != null) try {
                     resultSet.close();
-                } catch (SQLException ignored) {}
+                } catch (SQLException ignored) {
+                }
             }
         });
     }
@@ -76,10 +82,11 @@ public class Database {
                 return rowSet;
             } catch (SQLException e) {
                 throw new IllegalStateException(e);
-            }finally {
-                if(resultSet != null) try {
+            } finally {
+                if (resultSet != null) try {
                     resultSet.close();
-                } catch (SQLException ignored) {}
+                } catch (SQLException ignored) {
+                }
             }
         });
     }

@@ -11,12 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ConfigHelperTest {
-    private ServerMock server;
     private QuestSystem questSystem;
 
     @BeforeEach
     public void setUp() {
-        server = MockBukkit.mock();
+        MockBukkit.mock();
         questSystem = MockBukkit.load(QuestSystem.class);
     }
 
@@ -54,5 +53,4 @@ class ConfigHelperTest {
             fail();
         }
     }
-
 }

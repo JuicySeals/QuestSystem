@@ -1,7 +1,6 @@
 package dev.blackgate.questsystem.quest;
 
 import dev.blackgate.questsystem.quest.enums.QuestType;
-import dev.blackgate.questsystem.util.config.ConfigHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,6 +17,7 @@ public class Quest {
     private int entityCount; // How many entities the player has to kill to finish
     private String objectiveName;
     private int id;
+
     // Place blocks,break blocks,obtain items objective type constructor
     public Quest(String questName, String description, String permission, QuestType questType, List<QuestReward> rewards, List<ItemStack> objectiveItems) {
         this.questName = questName;
@@ -86,6 +86,7 @@ public class Quest {
     public String getPermission() {
         return permission;
     }
+
     public List<ItemStack> getObjectiveItems() {
         return objectiveItems;
     }
@@ -93,7 +94,14 @@ public class Quest {
     public int getEntityCount() {
         return entityCount;
     }
+
     public String getObjectiveTaskName() { // Struggled to think of a describing title for this method. Returns the entity name or achievement name
         return objectiveName;
+    }
+
+    public void executeRewards(Player player) {
+        for (QuestReward reward : getRewards()) {
+            reward.executeReward(player);
+        }
     }
 }

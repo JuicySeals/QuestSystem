@@ -30,4 +30,8 @@ public class Logger {
         Logger.severe("Message: " + throwable.getMessage());
         throwable.printStackTrace();
     }
+
+    public static void debug(String message) {
+        info("[DEBUG] " + message);
+    }
 }

@@ -1,38 +1,40 @@
 package dev.blackgate.questsystem.quest;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.commands.SubCommand;
 import dev.blackgate.questsystem.database.QuestDatabaseManager;
 import dev.blackgate.questsystem.database.QuestLoader;
 import dev.blackgate.questsystem.util.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class QuestManager {
 
-    private List<Quest> quests;
     private final QuestDatabaseManager databaseManager;
-    private QuestSystem questSystem;
+    private List<Quest> quests;
+    private final QuestSystem questSystem;
 
     public QuestManager(QuestSystem questSystem) {
         this.questSystem = questSystem;
         this.databaseManager = new QuestDatabaseManager(questSystem);
-        loadQuests();
+        if (questSystem.getDatabase().isConnected()) {
+            loadQuests();
+        } else {
+            quests = Collections.emptyList();
+        }
     }
 
     private void loadQuests() {
-        QuestLoader questLoader = new QuestLoader(questSystem.getDatabase());
+        QuestLoader questLoader = new QuestLoader(questSystem.getDatabase(), questSystem);
         Logger.info("Loading quests...");
         Logger.info("This may take some time.");
         quests = questLoader.getDatabaseQuests().join(); // Only on startup so its ok
         Logger.info("Finished loading quests");
     }
 
-    public void registerQuest(Quest quest) {
+    public CompletableFuture<Void> registerQuest(Quest quest) {
+        CompletableFuture<Void> finished = new CompletableFuture<>();
         CompletableFuture<Integer> completableFuture = databaseManager.addQuest(quest);
         completableFuture.whenComplete(((id, exception) -> {
             if (exception != null) {
@@ -43,18 +45,22 @@ public class QuestManager {
             databaseManager.processRewards(quest);
             databaseManager.processObjective(quest);
             quests.add(quest);
+            finished.complete(null);
         }));
+        return finished;
     }
 
-    public void resetDatabases() {
+    public void resetTables() {
         databaseManager.resetDatabases();
+        questSystem.getProgressionManager().reset();
     }
+
     public List<Quest> getQuests() {
         return quests;
     }
+
     public Quest getQuest(String name) {
         for (Quest quest : getQuests()) {
-            System.out.println(quest.getId());
             if (quest.getQuestName().equals(name)) {
                 return quest;
             }

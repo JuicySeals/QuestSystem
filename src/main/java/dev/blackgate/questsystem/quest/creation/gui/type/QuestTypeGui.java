@@ -10,7 +10,6 @@ import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -22,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuestTypeGui implements InventoryGUI {
-    private Inventory inventory;
     private final ConfigHelper configHelper;
     private final QuestSystem questSystem;
-    private boolean isSet;
     private final ItemPDC itemPDC;
+    private Inventory inventory;
+    private boolean isSet;
 
     public QuestTypeGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
@@ -110,7 +109,7 @@ public class QuestTypeGui implements InventoryGUI {
     }
 
     private QuestType getQuestTypeFromItem(ItemStack item) {
-        if(itemPDC.getValue(item) == null) return null;
+        if (itemPDC.getValue(item) == null) return null;
         return switch (itemPDC.getValue(item)) {
             case "BREAK_BLOCKS" -> QuestType.BREAK_BLOCKS;
             case "KILL_ENTITIES" -> QuestType.KILL_ENTITIES;

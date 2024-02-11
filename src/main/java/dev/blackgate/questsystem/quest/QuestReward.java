@@ -1,29 +1,34 @@
 package dev.blackgate.questsystem.quest;
 
+import dev.blackgate.questsystem.QuestSystem;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
 public class QuestReward {
+    private static final String WRONG_QUEST_TYPE = "Quest reward type is set to ";
     private final QuestRewardType rewardType;
-    private final static String WRONG_QUEST_TYPE = "Quest reward type is set to ";
     private List<?> rewards;
     private int xpAmount;
     private int coinAmount;
+    private final QuestSystem questSystem;
 
-    public QuestReward(QuestRewardType type, List<?> rewards) {
+    public QuestReward(QuestRewardType type, List<?> rewards, QuestSystem questSystem) {
         if (type != QuestRewardType.ITEMS && type != QuestRewardType.COMMAND) {
             throw new IllegalArgumentException("To supply a list reward type must be items or commands");
         }
         this.rewardType = type;
         this.rewards = rewards;
+        this.questSystem = questSystem;
     }
 
-    public QuestReward(QuestRewardType type, int amount) {
+    public QuestReward(QuestRewardType type, int amount, QuestSystem questSystem) {
         this.rewardType = type;
+        this.questSystem = questSystem;
         if (type == QuestRewardType.XP) {
             this.xpAmount = amount;
         } else if (rewardType == QuestRewardType.COINS) {
@@ -37,15 +42,19 @@ public class QuestReward {
         return rewardType;
     }
 
-    public void executeRewards(Player player) {
-        switch (rewardType) {
-            case XP -> giveXP(player);
-            case ITEMS -> giveItems(player);
-            case COINS -> {
-                //TODO
+    public void executeReward(Player player) {
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                switch (rewardType) {
+                    case XP -> giveXP(player);
+                    case ITEMS -> giveItems(player);
+                    case COINS -> questSystem.getCoinManager().addCoins(player, getCoinAmount());
+                    case COMMAND -> executeCommands(player);
+                }
             }
-            case COMMAND -> executeCommands(player);
-        }
+        }.runTask(questSystem);
     }
 
     public List<ItemStack> getItems() {
@@ -67,7 +76,7 @@ public class QuestReward {
     }
 
     private void giveXP(Player player) {
-        player.setExp(player.getExp() + xpAmount);
+        player.setLevel(player.getLevel() + xpAmount);
     }
 
     private void giveItems(Player player) {
@@ -79,10 +88,12 @@ public class QuestReward {
     }
 
     private void executeCommands(Player player) {
-        for (Object command : rewards) {
-            if (!(command instanceof String))
+        for (Object objectCommand : rewards) {
+            if (!(objectCommand instanceof String))
                 throw new IllegalArgumentException("Reward type set to command but reward isn't a String.");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ((String) command).replace("%player%", player.getName()));
+            String stringCommand = ((String) objectCommand)
+                    .replace("%player_name%", player.getName());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringCommand);
         }
     }
 

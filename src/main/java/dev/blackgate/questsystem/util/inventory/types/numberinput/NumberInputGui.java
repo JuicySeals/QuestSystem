@@ -6,7 +6,6 @@ import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -18,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NumberInputGui implements InventoryGUI {
-    private Inventory inventory;
-    private boolean isSet;
     private final QuestSystem questSystem;
     private final ItemPDC itemPDC;
     private final ItemStack centerItem;
     private final String numberType;
+    private Inventory inventory;
+    private boolean isSet;
     private NumberInputHandler numberInputHandler;
 
     public NumberInputGui(QuestSystem questSystem, ItemStack centerItem, String numberType) {
@@ -100,7 +99,7 @@ public class NumberInputGui implements InventoryGUI {
         String iconName = ChatColor.stripColor(iconMeta.getDisplayName());
         int amount = Integer.parseInt(iconName.substring(0, iconName.indexOf(" ")));
         String typeMessage;
-        if(itemPDC.getValue(event.getCurrentItem()) == null) return;
+        if (itemPDC.getValue(event.getCurrentItem()) == null) return;
         Player player = (Player) event.getWhoClicked();
         switch (itemPDC.getValue(event.getCurrentItem())) {
             case "REMOVE_1" -> {
@@ -124,9 +123,7 @@ public class NumberInputGui implements InventoryGUI {
                 event.getView().setTitle(ChatColor.stripColor(typeMessage));
 
             }
-            case "FINISH" -> {
-                finish(player, amount);
-            }
+            case "FINISH" -> finish(player, amount);
             default -> {
                 return;
             }
@@ -158,9 +155,9 @@ public class NumberInputGui implements InventoryGUI {
     }
 
     private String createMessage(int amount) {
-        if(amount > 1) {
+        if (amount > 1) {
             return ChatColor.GREEN + String.valueOf(amount) + " " + numberType + "s";
-        }else {
+        } else {
             return ChatColor.GREEN + String.valueOf(amount) + " " + numberType;
         }
     }

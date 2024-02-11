@@ -7,7 +7,6 @@ import dev.blackgate.questsystem.util.inventory.ItemPDC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -17,17 +16,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemsGui implements InventoryGUI {
-    private final ConfigHelper configHelper;
     private static final String BUTTON_NAME = ChatColor.GREEN + "Finish";
+    private final ConfigHelper configHelper;
+    private final QuestSystem questSystem;
+    private final ItemPDC itemPDC;
     private Inventory inventory;
     private boolean isSet;
-    private final QuestSystem questSystem;
     private ItemsGuiHandler itemsGuiHandler;
-    private final ItemPDC itemPDC;
+    private static final String BUTTON_VALUE = "FINISH";
 
     public ItemsGui(QuestSystem questSystem) {
         this.configHelper = questSystem.getConfigHelper();
@@ -59,7 +58,7 @@ public class ItemsGui implements InventoryGUI {
         finishMeta.setDisplayName(BUTTON_NAME);
         finish.setItemMeta(finishMeta);
 
-        questSystem.getItemPDC().set(finish, "FINISH");
+        questSystem.getItemPDC().set(finish, BUTTON_VALUE);
 
         items.add(finish);
         return items;
@@ -72,7 +71,7 @@ public class ItemsGui implements InventoryGUI {
                 || !event.getCurrentItem().getItemMeta().hasDisplayName()) {
             return;
         }
-        if (itemPDC.isItem(event.getCurrentItem(), "FINISH")) {
+        if (itemPDC.isItem(event.getCurrentItem(), BUTTON_VALUE)) {
             List<ItemStack> items = Arrays.asList(event.getInventory().getContents());
             Player player = (Player) event.getWhoClicked();
             items = filterItems(items);
@@ -106,10 +105,9 @@ public class ItemsGui implements InventoryGUI {
     public List<ItemStack> filterItems(List<ItemStack> items) {
         List<ItemStack> itemsCopy = new ArrayList<>(items);
         itemsCopy.removeIf(item -> {
-           if(item == null) return true;
-           if(itemPDC.getValue(item) == null) return false;
-           if(itemPDC.getValue(item).equals("FINISH")) return true;
-           return false;
+            if (item == null) return true;
+            if (itemPDC.getValue(item) == null) return false;
+            return itemPDC.getValue(item).equals(BUTTON_VALUE);
         });
         return itemsCopy;
     }

@@ -12,18 +12,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CoinDatabaseManagerTests {
     private static ServerMock server;
-    private static QuestSystem questSystem;
-    private static Database database;
     private static CoinDatabaseManager coinDatabaseManager;
     private static Player player;
 
     @BeforeAll
     public static void setUp() {
         server = MockBukkit.mock();
-        questSystem = MockBukkit.load(QuestSystem.class);
+        MockBukkit.load(QuestSystem.class);
         DatabaseCredentials credentials = new DatabaseCredentials()
-
-        database = new Database(credentials);
+                .setHost("168.100.163.69")
+                .setPort(3306)
+                .setDatabaseName("s249_db")
+                .setUsername("u249_l74SP9M2pT")
+                .setPassword("c5Z1lYj9des.HaGkb7B3OtKv");
+        Database database = new Database(credentials);
         coinDatabaseManager = new CoinDatabaseManager(database);
     }
 
@@ -49,6 +51,7 @@ class CoinDatabaseManagerTests {
 
     @Test
     void getCoins() {
+        coinDatabaseManager.addPlayer(player).join();
         coinDatabaseManager.setCoins(player, 1).join();
         int coins = coinDatabaseManager.getCoins(player).join();
         assertEquals(1, coins);

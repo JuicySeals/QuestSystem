@@ -6,6 +6,9 @@ messages:
 command-messages:
   reset:
     reset-message: "&aReset quests tables"
+  cancel:
+    not-in-quest: "&cYou have no quest in progress"
+    cancelled: "&aCancelled quest"
 database:
   host: localhost
   port: 3306
@@ -37,6 +40,7 @@ quest-creation-messages:
 quest:
   quest-start: "&aStarted %quest_name% quest!"
   already-in-quest: "&cYou are already in a quest!"
+  completed-quest: "&6Completed %quest_name% quest!"
 confirm-gui:
   cancel-message: "&aCancelled"
 player-join-message: # Variables: %quest_name%, %quest_progress%, %quest_progress_needed%, %player_name%

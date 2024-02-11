@@ -12,6 +12,10 @@ public class ConfigHelper {
         this.fileConfig = questSystem.getConfig();
     }
 
+    public static String formatColor(String s) {
+        return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
     public String getNoPermission() {
         return getGeneralMessage("no-permission");
     }
@@ -47,11 +51,4 @@ public class ConfigHelper {
         return formatColor(fileConfig.getString("command-messages." + subCommand.getName() + "." + message, ""));
     }
 
-    public static String formatColor(String s) {
-        return ChatColor.translateAlternateColorCodes('&', s);
-    }
-
-    public String getString(String path) {
-        return formatColor(fileConfig.getString(path));
-    }
 }

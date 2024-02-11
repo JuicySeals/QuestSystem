@@ -10,13 +10,15 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class QuestPlaceBlocksGuiHandler implements ItemsGuiHandler {
-    private QuestSystem questSystem;
+    private final QuestSystem questSystem;
+
     public QuestPlaceBlocksGuiHandler(QuestSystem questSystem) {
         this.questSystem = questSystem;
     }
+
     @Override
     public void onFinish(List<ItemStack> items, QuestCreator questCreator, Player player) {
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             questSystem.getQuestCreationManager().removeQuestCreator(player);
             player.sendMessage(questSystem.getConfigHelper().getQuestCreationMessage("quit-quest-creation"));
             return;

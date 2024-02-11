@@ -22,12 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ViewQuestsGui implements InventoryGUI {
+    private static final String MY_QUESTS = "MY_QUESTS";
     private final QuestManager questManager;
     private final QuestSystem questSystem;
     private Inventory inventory;
     private List<Quest> quests;
-    private ItemPDC itemPDC;
-    private static final String MY_QUESTS = "MY_QUESTS";
+    private final ItemPDC itemPDC;
 
     public ViewQuestsGui(QuestSystem questSystem) {
         this.questManager = questSystem.getQuestManager();
@@ -50,7 +50,7 @@ public class ViewQuestsGui implements InventoryGUI {
     public void open(Player player) {
         Inventory inventoryPlayerCopy = getInventory(); // Inventory copy
         inventoryPlayerCopy.setItem(49, createMyQuestsItem(player));
-        if(player.hasPermission("*") || player.isOp()) {
+        if (player.hasPermission("*") || player.isOp()) {
             questSystem.getInventoryManager().registerHandledInventory(inventoryPlayerCopy, this);
             player.openInventory(inventoryPlayerCopy);
             return;
@@ -115,7 +115,7 @@ public class ViewQuestsGui implements InventoryGUI {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.YELLOW + quest.getDescription());
         lore.add(" ");
-        lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "Rewards:"); // Cant apply 2 chatcolors together
+        lore.add(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Rewards:"); // Cant apply 2 chatcolors together
         for (QuestReward reward : quest.getRewards()) {
             lore.add(createMessage(reward));
         }
@@ -130,13 +130,13 @@ public class ViewQuestsGui implements InventoryGUI {
     }
 
     private String createMessage(QuestReward questReward) {
-        String message = ChatColor.GOLD + "";
+        String message = String.valueOf(ChatColor.GOLD);
         switch (questReward.getRewardType()) {
             case XP -> message += questReward.getXpAmount() + " XP levels";
             case COINS -> message += questReward.getCoinAmount() + " coins";
             case ITEMS -> {
                 int amount = 0;
-                for(ItemStack item : questReward.getItems()) {
+                for (ItemStack item : questReward.getItems()) {
                     amount += item.getAmount();
                 }
                 message += amount + " items";
@@ -178,14 +178,14 @@ public class ViewQuestsGui implements InventoryGUI {
         event.setCancelled(true);
         ItemStack item = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
-        if(item == null) return;
-        if(itemPDC.isItem(item, MY_QUESTS)) {
+        if (item == null) return;
+        if (itemPDC.isItem(item, MY_QUESTS)) {
             ViewInProgressQuestsGui viewInProgressQuests = new ViewInProgressQuestsGui(questSystem);
             viewInProgressQuests.open(player);
             return;
         }
         Quest quest = getQuest(event.getCurrentItem());
-        if(quest == null) return;
+        if (quest == null) return;
         questSystem.getProgressionManager().addPlayer(player, quest);
         player.closeInventory();
     }

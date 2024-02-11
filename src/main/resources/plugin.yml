@@ -3,6 +3,7 @@ main: dev.blackgate.questsystem.QuestSystem
 version: 1
 author: JuicySeals
 api-version: 1.20
+softdepend: [ PlaceholderAPI ]
 commands:
   quests:
     usage: /quests <subcommand>

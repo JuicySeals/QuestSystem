@@ -5,29 +5,32 @@ import dev.blackgate.questsystem.quest.Quest;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.enums.QuestRewardType;
 import dev.blackgate.questsystem.quest.enums.QuestType;
+import dev.blackgate.questsystem.util.DataAccessException;
 import dev.blackgate.questsystem.util.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.io.BukkitObjectInputStream;
-import org.checkerframework.checker.units.qual.C;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class QuestLoader {
-    private Database database;
-    private List<Quest> quests;
-    private CompletableFuture<Void> finishedLoading;
-    public QuestLoader(Database database) {
+    private final Database database;
+    private final List<Quest> quests;
+    private final CompletableFuture<Void> finishedLoading;
+    private final QuestSystem questSystem;
+
+    public QuestLoader(Database database, QuestSystem questSystem) {
         this.database = database;
         this.quests = new ArrayList<>();
         this.finishedLoading = new CompletableFuture<>();
+        this.questSystem = questSystem;
         load();
     }
 
@@ -38,6 +41,7 @@ public class QuestLoader {
                 return;
             }
             Iterator<Quest> iterator = questsLoaded.iterator();
+            if (!iterator.hasNext()) finishedLoading.complete(null);
             while (iterator.hasNext()) {
                 Quest quest = iterator.next();
                 int id = quest.getId();
@@ -78,7 +82,7 @@ public class QuestLoader {
                     }
                     questToAdd.setId(id);
                     quests.add(questToAdd);
-                    if(lastLoop) {
+                    if (lastLoop) {
                         finishedLoading.complete(null);
                     }
                 });
@@ -129,11 +133,11 @@ public class QuestLoader {
                 while (cachedRowSet.next()) {
                     int xp = cachedRowSet.getInt("xp");
                     int coins = cachedRowSet.getInt("coins");
-                    rewards.add(new QuestReward(QuestRewardType.XP, xp));
-                    rewards.add(new QuestReward(QuestRewardType.COINS, coins));
+                    rewards.add(new QuestReward(QuestRewardType.XP, xp, questSystem));
+                    rewards.add(new QuestReward(QuestRewardType.COINS, coins, questSystem));
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataAccessException(e);
             }
 
             return rewards;
@@ -151,9 +155,9 @@ public class QuestLoader {
                     commands.add(cachedRowSet.getString("command"));
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataAccessException(e);
             }
-            return new QuestReward(QuestRewardType.COMMAND, commands);
+            return new QuestReward(QuestRewardType.COMMAND, commands, questSystem);
         });
     }
 
@@ -163,7 +167,7 @@ public class QuestLoader {
 
         return itemsFuture.thenApplyAsync(cachedRowSet -> {
             List<ItemStack> items = extractItems(cachedRowSet);
-            return new QuestReward(QuestRewardType.ITEMS, items);
+            return new QuestReward(QuestRewardType.ITEMS, items, questSystem);
         });
     }
 
@@ -176,7 +180,7 @@ public class QuestLoader {
                 items.add(itemStack.join()); // Join doesnt block main thread as the code is run on the ForkJoinPool thread blocking that until its deserialized
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return items;
     }
@@ -198,7 +202,7 @@ public class QuestLoader {
                     return cachedRowSet.getInt("entity_count");
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataAccessException(e);
             }
             return 0; // Default value if no data is found
         });
@@ -214,7 +218,7 @@ public class QuestLoader {
                     return cachedRowSet.getString("entity");
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataAccessException(e);
             }
             return null; // Default value if no data is found
         });
@@ -230,7 +234,7 @@ public class QuestLoader {
                     return cachedRowSet.getString("achievement");
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataAccessException(e);
             }
 
             return null; // Default value if no data is found

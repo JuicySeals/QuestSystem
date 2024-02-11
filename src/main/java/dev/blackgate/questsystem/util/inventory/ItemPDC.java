@@ -9,6 +9,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class ItemPDC {
     private final NamespacedKey namespacedKey;
+
     public ItemPDC(QuestSystem questSystem) {
         namespacedKey = new NamespacedKey(questSystem, "QuestSystem");
     }
@@ -20,19 +21,19 @@ public class ItemPDC {
     }
 
     public boolean isItem(ItemStack itemStack, String expectedValue) {
-        if(!validate(itemStack)) return false;
+        if (!validate(itemStack)) return false;
         PersistentDataContainer persistentDataContainer = itemStack.getItemMeta().getPersistentDataContainer();
         return persistentDataContainer.get(namespacedKey, PersistentDataType.STRING).equals(expectedValue);
     }
 
     public String getValue(ItemStack itemStack) {
-        if(!validate(itemStack)) return null;
+        if (!validate(itemStack)) return null;
         PersistentDataContainer persistentDataContainer = itemStack.getItemMeta().getPersistentDataContainer();
         return persistentDataContainer.get(namespacedKey, PersistentDataType.STRING);
     }
 
     private boolean validate(ItemStack itemStack) {
-        if(itemStack.getItemMeta() == null) return false;
+        if (itemStack.getItemMeta() == null) return false;
         PersistentDataContainer persistentDataContainer = itemStack.getItemMeta().getPersistentDataContainer();
         return persistentDataContainer.has(namespacedKey);
     }

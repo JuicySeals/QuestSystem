@@ -5,32 +5,29 @@ import dev.blackgate.questsystem.quest.Quest;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.quest.enums.QuestType;
 import dev.blackgate.questsystem.util.Logger;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import javax.sql.rowset.CachedRowSet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class QuestDatabaseManager {
+    public static final String FAILED_QUEST_ID = "Failed to get quest id for quest name: ";
     private final Database database;
     private final QuestSystem questSystem;
-    private final List<Quest> questCache;
-    public static final String FAILED_QUEST_ID = "Failed to get quest id for quest name: ";
+
     public QuestDatabaseManager(QuestSystem questSystem) {
         this.database = questSystem.getDatabase();
         this.questSystem = questSystem;
-        this.questCache = new ArrayList<>();
-        createTables();
+        if (database.isConnected()) {
+            createTables();
+        }
     }
 
     public void createTables() {
@@ -117,17 +114,17 @@ public class QuestDatabaseManager {
     public void processObjective(Quest quest) {
         QuestType questType = quest.getQuestType();
         int id = quest.getId();
-        if(questType == QuestType.OBTAIN_ITEM
+        if (questType == QuestType.OBTAIN_ITEM
                 || questType == QuestType.PLACE_BLOCKS
                 || questType == QuestType.BREAK_BLOCKS) {
             addObjectiveItems(quest.getObjectiveItems(), id);
-        }else {
+        } else {
             addQuestObjective(quest);
         }
     }
 
     private void addObjectiveItems(List<ItemStack> items, int id) {
-        for(ItemStack item : items) {
+        for (ItemStack item : items) {
             String serializedItem = serializeItemStack(item);
             String query = "INSERT INTO `quests_objective_items` (`ID`, `item`) VALUES (?, ?);";
             listenForError(database.executeStatement(query, List.of(id, serializedItem)), "Failed to add objective items to database", query);
@@ -138,13 +135,13 @@ public class QuestDatabaseManager {
         String query = "";
         LinkedList<Object> variables = new LinkedList<>();
         QuestType questType = quest.getQuestType();
-        String name = quest.getQuestName();
+        String name = quest.getObjectiveTaskName();
         variables.add(quest.getId());
-        if(questType == QuestType.KILL_ENTITIES) {
+        if (questType == QuestType.KILL_ENTITIES) {
             query = "INSERT INTO `quests_objective` (`ID`, `entity`, `entity_count`) VALUES (?, ?, ?);";
             variables.add(name);
             variables.add(quest.getEntityCount());
-        }else if(questType == QuestType.GET_ACHIEVEMENT) {
+        } else if (questType == QuestType.GET_ACHIEVEMENT) {
             query = "INSERT INTO `quests_objective` (`ID`, `achievement`) VALUES (?, ?);";
             variables.add(name);
         }
@@ -168,7 +165,7 @@ public class QuestDatabaseManager {
                         return -1;
                     }
                     try {
-                        if(rowSet.next()) {
+                        if (rowSet.next()) {
                             return rowSet.getInt("ID");
                         }
                         return -1;
@@ -237,7 +234,7 @@ public class QuestDatabaseManager {
 
     private void listenForError(CompletableFuture<Void> completableFuture, String errorMessage, String query) {
         completableFuture.whenCompleteAsync(((unused, throwable) -> {
-            if(throwable != null) {
+            if (throwable != null) {
                 Logger.printSQLException(errorMessage, query, throwable);
             }
         }));

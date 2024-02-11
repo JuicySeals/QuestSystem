@@ -3,13 +3,15 @@ package dev.blackgate.questsystem;
 import dev.blackgate.questsystem.coin.CoinDatabaseManager;
 import dev.blackgate.questsystem.coin.listeners.PlayerCoinJoinListener;
 import dev.blackgate.questsystem.commands.CommandManager;
+import dev.blackgate.questsystem.commands.impl.CancelQuestSubCommand;
 import dev.blackgate.questsystem.commands.impl.CreateQuestSubCommand;
 import dev.blackgate.questsystem.commands.impl.HelpSubCommand;
-import dev.blackgate.questsystem.commands.impl.ResetQuestsSubCommand;
 import dev.blackgate.questsystem.commands.impl.ViewQuestsSubCommand;
 import dev.blackgate.questsystem.database.Database;
 import dev.blackgate.questsystem.database.DatabaseCredentials;
-import dev.blackgate.questsystem.database.ProgressionDatabaseManager;
+import dev.blackgate.questsystem.hooks.PlaceholderAPIHook;
+import dev.blackgate.questsystem.progression.ProgressionDatabaseManager;
+import dev.blackgate.questsystem.progression.trackers.*;
 import dev.blackgate.questsystem.quest.QuestManager;
 import dev.blackgate.questsystem.quest.creation.QuestCreationManager;
 import dev.blackgate.questsystem.quest.creation.listeners.QuestGuiListener;
@@ -57,6 +59,8 @@ public class QuestSystem extends JavaPlugin {
         registerListeners();
         Logger.info("Registering subcommands");
         registerSubCommands();
+        Logger.info("Registering PlaceholderAPI expansion");
+        registerPapiExpansion();
         Logger.info("Finished");
     }
 
@@ -69,6 +73,17 @@ public class QuestSystem extends JavaPlugin {
         pluginManager.registerEvents(new PlayerCoinJoinListener(this), this);
         pluginManager.registerEvents(new QuestGuiListener(this), this);
         pluginManager.registerEvents(new PlayerJoinQuestInfoListener(this), this);
+        pluginManager.registerEvents(new ObtainItemQuestTracker(progressionDatabaseManager), this);
+        pluginManager.registerEvents(new BreakBlocksTracker(progressionDatabaseManager), this);
+        pluginManager.registerEvents(new PlaceBlocksTracker(progressionDatabaseManager), this);
+        pluginManager.registerEvents(new KillEntitiesTracker(progressionDatabaseManager), this);
+        pluginManager.registerEvents(new AchievementTracker(progressionDatabaseManager), this);
+    }
+
+    private void registerPapiExpansion() {
+        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderAPIHook(this).register();
+        }
     }
 
     private void registerManagers() {
@@ -77,8 +92,8 @@ public class QuestSystem extends JavaPlugin {
         pluginManager = Bukkit.getPluginManager();
         questCreationManager = new QuestCreationManager();
         inventoryManager = new InventoryManager();
-        questManager = new QuestManager(this);
         progressionDatabaseManager = new ProgressionDatabaseManager(this);
+        questManager = new QuestManager(this);
     }
 
     private void registerCommands() {
@@ -94,7 +109,7 @@ public class QuestSystem extends JavaPlugin {
         commandManager.registerSubCommand(new CreateQuestSubCommand(this));
         commandManager.registerSubCommand(new HelpSubCommand(this));
         commandManager.registerSubCommand(new ViewQuestsSubCommand(this));
-        commandManager.registerSubCommand(new ResetQuestsSubCommand(this));
+        commandManager.registerSubCommand(new CancelQuestSubCommand(this));
     }
 
     public CommandManager getCommandManager() {
@@ -120,6 +135,10 @@ public class QuestSystem extends JavaPlugin {
         return database;
     }
 
+    public void setDatabase(Database database) { // The only modification for unit testing (I know its bad but this allows for much more testing)
+        this.database = database;
+    }
+
     public CoinDatabaseManager getCoinManager() {
         return coinDatabaseManager;
     }
@@ -139,5 +158,8 @@ public class QuestSystem extends JavaPlugin {
     public ItemPDC getItemPDC() {
         return itemPDC;
     }
-    public ProgressionDatabaseManager getProgressionManager() {return progressionDatabaseManager;}
+
+    public ProgressionDatabaseManager getProgressionManager() {
+        return progressionDatabaseManager;
+    }
 }

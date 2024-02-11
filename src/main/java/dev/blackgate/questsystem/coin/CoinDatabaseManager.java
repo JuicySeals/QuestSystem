@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,7 +14,9 @@ public class CoinDatabaseManager {
 
     public CoinDatabaseManager(Database database) {
         this.database = database;
-        createCoinTable();
+        if (database.isConnected()) {
+            createCoinTable();
+        }
     }
 
     private void createCoinTable() {
@@ -44,15 +45,15 @@ public class CoinDatabaseManager {
         }));
     }
 
+    public void addCoins(Player player, int amount) {
+        getCoins(player).whenCompleteAsync((currentCoins, throwable) -> setCoins(player, currentCoins + amount));
+    }
+
     public CompletableFuture<Void> setCoins(Player player, int amount) {
         return CompletableFuture.runAsync(() -> {
             String statement = "UPDATE coins SET `amount`= ?, `UUID`=?;";
             listenForError(database.executeStatement(statement, List.of(amount, player.getUniqueId().toString())), "Failed to set player coins: " + player.getName(), statement);
         });
-    }
-
-    public void resetCoins(Player player) {
-        setCoins(player, 0);
     }
 
     public CompletableFuture<Void> addPlayer(Player player) {
@@ -65,7 +66,7 @@ public class CoinDatabaseManager {
     public CompletableFuture<Void> removePlayer(Player player) {
         return CompletableFuture.runAsync(() -> {
             String removePlayerSQL = "DELETE FROM coins WHERE UUID=?;";
-            listenForError(database.executeStatement(removePlayerSQL, List.of(player.getUniqueId().toString())),"Failed to remove player to coins database", removePlayerSQL);
+            listenForError(database.executeStatement(removePlayerSQL, List.of(player.getUniqueId().toString())), "Failed to remove player to coins database", removePlayerSQL);
         });
     }
 
@@ -88,7 +89,7 @@ public class CoinDatabaseManager {
 
     private void listenForError(CompletableFuture<Void> completableFuture, String errorMessage, String query) {
         completableFuture.whenCompleteAsync(((unused, throwable) -> {
-            if(throwable != null) {
+            if (throwable != null) {
                 Logger.printSQLException(errorMessage, query, throwable);
             }
         }));

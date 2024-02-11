@@ -8,9 +8,11 @@ import org.bukkit.entity.Player;
 
 public class QuestXpGui implements NumberInputHandler {
     private final QuestCreationManager questCreationManager;
+
     public QuestXpGui(QuestCreationManager questCreationManager) {
         this.questCreationManager = questCreationManager;
     }
+
     @Override
     public void onFinish(Player player, int amount) {
         QuestCreator creator = questCreationManager.getQuestCreator(player);

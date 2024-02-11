@@ -1,7 +1,7 @@
 package dev.blackgate.questsystem.quest.gui;
 
 import dev.blackgate.questsystem.QuestSystem;
-import dev.blackgate.questsystem.database.ProgressionDatabaseManager;
+import dev.blackgate.questsystem.progression.ProgressionDatabaseManager;
 import dev.blackgate.questsystem.quest.Quest;
 import dev.blackgate.questsystem.quest.QuestReward;
 import dev.blackgate.questsystem.util.Logger;
@@ -24,8 +24,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class ViewInProgressQuestsGui implements InventoryGUI {
     private Inventory inventory;
-    private ProgressionDatabaseManager progressionDatabaseManager;
-    private QuestSystem questSystem;
+    private final ProgressionDatabaseManager progressionDatabaseManager;
+    private final QuestSystem questSystem;
+
     public ViewInProgressQuestsGui(QuestSystem questSystem) {
         this.questSystem = questSystem;
         this.progressionDatabaseManager = questSystem.getProgressionManager();
@@ -36,6 +37,7 @@ public class ViewInProgressQuestsGui implements InventoryGUI {
         inventory = Bukkit.createInventory(null, 27, "Your quests");
         inventory.setContents(getItems().toArray(new ItemStack[0]));
     }
+
     @Override
     public Inventory getInventory() {
         return inventory;
@@ -54,13 +56,13 @@ public class ViewInProgressQuestsGui implements InventoryGUI {
             }
         };
         completableFuture.whenCompleteAsync(((quest, throwable) -> {
-            if(throwable != null) {
+            if (throwable != null) {
                 Logger.printException("Failed to open my quests inventory", throwable);
                 return;
             }
-            if(quest != null) {
+            if (quest != null) {
                 inventoryCopy.setItem(13, createQuestItem(quest, player).join()); // Ran async so it only blocks ForkJoinPool thread not main so its fine
-            }else {
+            } else {
                 inventoryCopy.setItem(13, createNoQuestFoundItem());
             }
             openInventory.runTask(questSystem);
@@ -88,7 +90,7 @@ public class ViewInProgressQuestsGui implements InventoryGUI {
             lore.add(ChatColor.YELLOW + quest.getDescription());
             lore.add("");
 
-            lore.add(ChatColor.GOLD + "" + ChatColor.BOLD + "Rewards:");
+            lore.add(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Rewards:");
             for (QuestReward reward : quest.getRewards()) {
                 lore.add(createMessage(reward));
             }
@@ -108,13 +110,13 @@ public class ViewInProgressQuestsGui implements InventoryGUI {
 
 
     private String createMessage(QuestReward questReward) {
-        String message = ChatColor.GOLD + "";
+        String message = String.valueOf(ChatColor.GOLD);
         switch (questReward.getRewardType()) {
             case XP -> message += questReward.getXpAmount() + " XP levels";
             case COINS -> message += questReward.getCoinAmount() + " coins";
             case ITEMS -> {
                 int amount = 0;
-                for(ItemStack item : questReward.getItems()) {
+                for (ItemStack item : questReward.getItems()) {
                     amount += item.getAmount();
                 }
                 message += amount + " items";
@@ -136,12 +138,12 @@ public class ViewInProgressQuestsGui implements InventoryGUI {
 
     @Override
     public void onClose(InventoryCloseEvent event) {
-
+        // Nothing needing to be done
     }
 
     private List<ItemStack> setEdges() {
         List<ItemStack> itemStacks = new ArrayList<>();
-        int[] edgeSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20,21, 22, 23,24, 25, 26, 27};
+        int[] edgeSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27};
         ItemStack edgeItem = getEdgeItem();
         for (int i = 0; i < 27; i++) {
             final int currentIndex = i; // Variables used in lamda required final

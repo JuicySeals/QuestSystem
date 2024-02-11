@@ -23,11 +23,7 @@ public class PlayerCoinJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if ("TEST-PLAYER".equals(player.getName()))
-            return; // For unit tests (No possible side effects as real players can't have - in their name.)
-        if (database == null) {
-            return;
-        }
+        if (!database.isConnected()) return;
         CompletableFuture<Boolean> completableFuture = coinDatabaseManager.isPlayerInDatabase(player);
         completableFuture.whenComplete(((isInDb, exception) -> {
             if (exception != null) {

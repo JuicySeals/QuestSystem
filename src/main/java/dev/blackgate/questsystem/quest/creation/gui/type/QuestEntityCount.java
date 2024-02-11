@@ -5,10 +5,12 @@ import dev.blackgate.questsystem.util.inventory.types.numberinput.NumberInputHan
 import org.bukkit.entity.Player;
 
 public class QuestEntityCount implements NumberInputHandler {
-    private QuestCreator questCreator;
+    private final QuestCreator questCreator;
+
     public QuestEntityCount(QuestCreator questCreator) {
         this.questCreator = questCreator;
     }
+
     @Override
     public void onFinish(Player player, int amount) {
         questCreator.setEntityCount(amount);
