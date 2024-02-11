@@ -34,11 +34,7 @@ public class ProgressionDatabaseManagerTests {
         server = MockBukkit.mock();
         questSystem = MockBukkit.load(QuestSystem.class);
         DatabaseCredentials credentials = new DatabaseCredentials()
-                .setHost("168.100.163.69")
-                .setPort(3306)
-                .setDatabaseName("s249_db")
-                .setUsername("u249_l74SP9M2pT")
-                .setPassword("c5Z1lYj9des.HaGkb7B3OtKv");
+                
         questSystem.setDatabase(new Database(credentials));
         questManager = new QuestManager(questSystem);
         Quest quest = new Quest("TEST", "TEST-DESC", "TEST-PERMISSION", QuestType.KILL_ENTITIES, Collections.emptyList(), "ZOMBIE", 1);
