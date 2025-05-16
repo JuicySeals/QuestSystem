@@ -42,7 +42,6 @@ public class QuestSystem extends JavaPlugin {
     public void onEnable() {
         // Order is very important
         saveDefaultConfig();
-        Logger.info("Developled by JuicySeals");
         Logger.info("Connecting to database");
         try {
             initDatabase();
